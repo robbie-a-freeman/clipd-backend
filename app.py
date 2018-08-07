@@ -12,6 +12,10 @@ from flask import redirect
 from flask import url_for
 from flask import send_file
 
+import os
+import sys
+sys.path.insert(0, 'static/py')
+
 app = Flask(__name__)
 
 __author__ = "Robbie Freeman"
