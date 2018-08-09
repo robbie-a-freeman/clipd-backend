@@ -50,6 +50,11 @@ def about():
 def article():
     return render_template('index.html')
 
+# loads the page with list of articles TODO get rid of
+@app.route('/article')
+def exArticle():
+    return render_template('article.html')
+
 # loads the page with list of articles TODO implement
 @app.route('/articles')
 def articles():
