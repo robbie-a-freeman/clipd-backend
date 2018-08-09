@@ -14,7 +14,7 @@ __status__ = "Development"
     ArticlePreview objects
 """
 def fetchHomePage():
-    articles = glob.glob("static/articles/*")
+    articles = glob.glob("static/articleFolders/*")
     articles.sort(key=os.path.getmtime, reverse=True)
     print(articles)
 

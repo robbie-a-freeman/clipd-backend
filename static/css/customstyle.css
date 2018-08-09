@@ -5,7 +5,7 @@ html, body {
 
 .content {
   min-height:100%;
-  margin-top: 100px;
+  margin-top: 50px;
 }
 
 .content p {
@@ -72,5 +72,6 @@ input[name="search"] {
 
 h1, h2, h3 {
   text-align: center;
-  padding: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }

@@ -49,9 +49,9 @@ def about():
     return render_template('about.html')
 
 # loads the page with list of articles TODO implement
-@app.route('/article/<string>')
-def article():
-    return render_template('index.html')
+@app.route('/article/<query>')
+def article(query):
+        return render_template('articleFiles/' + query + '.html')
 
 # loads the page with list of articles TODO get rid of
 @app.route('/article')

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}ARTICLE TITLE{% endblock %}
+
 
 {% block style %}
 <style>
@@ -41,15 +41,11 @@ footer {
 
   <div class="col-sm-10 container text-center">
     <div id="article-title">
-      <img alt="bored person" src="../static/img/bp.jpg"></img>
-      <h1>Title</h1>
+      {% block article_title %}{% endblock %}
     </div>
-    <p class="subtext"><i>Interesting subtext</i></p><br>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut dui est, rutrum ut interdum non, tristique at est. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque a risus id ipsum tristique auctor. Proin augue odio, dignissim id nulla sit amet, ultrices lacinia metus. Donec placerat arcu et nisi bibendum ultricies. Nam id est at velit scelerisque scelerisque vitae nec quam. Morbi volutpat ac quam vel semper. Proin eleifend fermentum magna quis mattis. Sed vestibulum, metus ac commodo pretium, augue risus accumsan leo, ut iaculis risus arcu eu dolor. In vel scelerisque lacus. Nullam posuere aliquam libero et accumsan. Mauris congue risus sed blandit dapibus. Pellentesque maximus lorem nec urna tempus, sed pharetra felis sollicitudin. Vivamus venenatis mollis risus, nec fringilla lectus rhoncus a.
-    <p>Nulla consectetur, erat ac volutpat commodo, metus tortor faucibus mi, sed ullamcorper ex tortor egestas mauris. Nulla vel augue tincidunt, varius enim vitae, faucibus orci. Ut et elit dictum risus finibus tristique et vitae purus. Quisque id varius urna. Nunc velit turpis, vehicula nec quam a, varius scelerisque ex. Sed fermentum lacus sed facilisis consequat. Mauris molestie, enim eu sagittis facilisis, ante lacus pulvinar magna, quis dictum mauris neque et est. Mauris hendrerit vel diam eget lacinia. Nam ornare volutpat quam. Curabitur elementum, magna at commodo ultrices, magna turpis varius dui, at facilisis est nisi in leo. Pellentesque eleifend purus in sem egestas, id vestibulum enim rhoncus.</p>
-    <p>Nullam a ipsum est. Cras pellentesque pulvinar viverra. Maecenas tempor feugiat nunc, ac fermentum nisi. Nullam sem eros, auctor vitae luctus a, facilisis in nisi. Sed blandit ut sapien non suscipit. Nunc nisi lacus, aliquet ac leo in, dignissim commodo ipsum. Nulla dictum dui felis, a tincidunt arcu rutrum vitae. Phasellus nisi tortor, tincidunt vel dui scelerisque, imperdiet convallis urna. Vivamus gravida sem sit amet ipsum ornare congue. Proin dignissim purus quis elit varius aliquam.</p>
-    <p>Integer feugiat sem nec hendrerit ultrices. Praesent consequat massa purus, sollicitudin finibus est rhoncus a. Phasellus feugiat quam sit amet ipsum fringilla ultricies. Etiam lacinia enim mi, ut rhoncus justo egestas at. Duis a scelerisque justo, et maximus eros. Sed a pellentesque arcu, ac finibus augue. Fusce in leo augue. Donec tempus interdum nisi, nec lobortis urna fermentum at. Ut dolor tellus, accumsan vel viverra vel, vulputate quis nunc. Duis ut dignissim lacus, imperdiet egestas neque. Sed scelerisque nulla ac rhoncus convallis. Morbi pharetra vehicula scelerisque. Praesent sed mauris magna. Cras sed felis turpis.</p>
-    <p>Etiam sed odio tempus lectus dapibus porta. Phasellus auctor, risus vel interdum aliquam, orci purus aliquam tortor, ac suscipit risus nibh ut libero. Mauris risus turpis, mattis in imperdiet sit amet, imperdiet id erat. Vestibulum elementum interdum egestas. Aenean est magna, dictum sed tempor a, ultrices nec leo. Vivamus a nunc dolor. Mauris vel dictum augue. Cras vitae auctor eros. Sed velit dolor, sollicitudin id massa ut, pellentesque laoreet ipsum.</p>
+    {% block article_picture %}{% endblock %}
+    {% block article_picture_subtext %}{% endblock %}
+    {% block article_content %}{% endblock %}
   </div>
 
   <div class="col-sm-1 container text-center">
