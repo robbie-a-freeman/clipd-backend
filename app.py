@@ -16,6 +16,8 @@ import os
 import sys
 sys.path.insert(0, 'static/py')
 
+import fetch
+
 app = Flask(__name__)
 
 __author__ = "Robbie Freeman"
@@ -33,6 +35,7 @@ if __name__ == "__main__":
 @app.route('/home')
 @app.route('/index')
 def changelog():
+    fetch.fetchHomePage()
     return render_template('index.html')
 
 # basic 404 page. Hopefully isn't called all that often TODO: implement
