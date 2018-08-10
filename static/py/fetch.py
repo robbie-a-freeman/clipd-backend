@@ -3,6 +3,7 @@
 
 import glob
 import os
+from bs4 import BeautifulSoup as bs
 
 __author__ = "Robbie Freeman"
 __credits__ = ["Robbie Freeman"]
@@ -14,8 +15,12 @@ __status__ = "Development"
     ArticlePreview objects
 """
 def fetchHomePage():
-    articles = glob.glob("static/articleFolders/*")
+    articles = glob.glob("templates/articleFiles/*")
     articles.sort(key=os.path.getmtime, reverse=True)
+    for a in articles:
+        page = bs(a, 'html.parser')
+        print(page.find(id="title"))
+
     print(articles)
 
 """ Class that represents an article preview. Does nothing but contain the
