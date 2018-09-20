@@ -18,8 +18,11 @@ def fetchHomePage():
     articles = glob.glob("templates/articleFiles/*")
     articles.sort(key=os.path.getmtime, reverse=True)
     for a in articles:
-        page = bs(a, 'html.parser')
-        print(page.find(id="title"))
+        article = open(a, 'r')
+        page = bs(article, 'html.parser')
+        title = str(page.find(id="title")).split('>')[1].split('</')[0]
+        #ap = ArticlePreview(picture, title, subtitle, link, name)
+        print(title)
 
     print(articles)
 
