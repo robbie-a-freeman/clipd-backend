@@ -36,7 +36,7 @@ if __name__ == "__main__":
 @app.route('/index')
 def changelog():
     fetch.fetchHomePage()
-    return render_template('index.html')
+    return render_template('history.html')
 
 # basic 404 page. Hopefully isn't called all that often TODO: implement
 @app.errorhandler(404)
