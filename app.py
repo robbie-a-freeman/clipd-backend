@@ -18,6 +18,8 @@ sys.path.insert(0, 'static/py')
 
 import fetch
 
+from flaskext.mysql import MySQL
+
 app = Flask(__name__)
 
 __author__ = "Robbie Freeman"
@@ -29,6 +31,20 @@ __status__ = "Development"
 # calls the app so it can run
 if __name__ == "__main__":
     app.run()
+
+# MySQL configurations - source: https://code.tutsplus.com/tutorials/creating-a-web-app-from-scratch-using-python-flask-and-mysql--cms-22972
+mysql = MySQL()
+app.config['MYSQL_DATABASE_USER'] = 'root'
+app.config['MYSQL_DATABASE_PASSWORD'] = 'rorodog811'
+app.config['MYSQL_DATABASE_DB'] = 'csgo_highlights'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+mysql.init_app(app)
+
+conn = mysql.connect()
+cursor = conn.cursor()
+cursor.execute('''SELECT * FROM videos''')
+data = cursor.fetchall()
+print (data)
 
 # loads home
 @app.route('/')
