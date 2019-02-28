@@ -6,7 +6,7 @@ handles non-static downloads.
 from flask import Flask
 from flask import render_template
 from flask import request
-from flask import json
+from flask import jsonify
 from flask import abort
 from flask import redirect
 from flask import url_for
@@ -19,6 +19,8 @@ sys.path.insert(0, 'static/py')
 import fetch
 
 from flaskext.mysql import MySQL
+
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
@@ -53,6 +55,23 @@ print (data)
 def changelog():
     fetch.fetchHomePage()
     return render_template('history.html')
+
+# 2/27/19 - experimental route that pulls searches
+@app.route('/suggestions')
+def suggestions():
+    print("in suggestions")
+    text = request.args.get('jsdata')
+
+    suggestions_list = []
+    links = []
+    if text:
+
+        for d in data:
+            links.append(d[0])
+
+        print("out suggestions")
+
+    return jsonify(links)
 
 # basic 404 page. Hopefully isn't called all that often TODO: implement
 @app.errorhandler(404)

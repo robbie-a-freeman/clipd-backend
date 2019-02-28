@@ -35,9 +35,32 @@
 <div class="content container text-center">
   <h1>Search clips</h1><br>
   <div class="search-container">
-    <form action="/action_page.php">
-      <input style="width:600px;" type="text" placeholder="ex. s1mple 1v2, best aces" name="search">
+    <form>
+      <input style="width:600px;" type="text" placeholder="ex. s1mple 1v2, best aces" id="search">
     </form>
   </div>
+  <div id="links"></div>
+  <script>
+    $("#search").keyup(function() {
+      var text = $(this).val();
+      $.ajax({
+        url: "/suggestions",
+        type: "get",
+        data: {
+          jsdata: text
+        },
+        success: function(response) {
+          $("#links").html(JSON.stringify(response));
+        },
+        error: function(xhr) {
+          console.log("Error in retrieving search results");
+        }
+      });
+    });
+  </script>
+  {% for l in links %}
+  {{ l }}<br>
+  {% endfor %}
+
 </div>
 {% endblock %}
