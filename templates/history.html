@@ -39,25 +39,40 @@
       <input style="width:600px;" type="text" placeholder="ex. s1mple 1v2, best aces" id="search">
     </form>
   </div>
-  <div id="links"></div>
+  <br>
+  <div id="results">Try searching for something!</div>
+  <script src="../static/js/youtube.js"></script>
   <script>
     $("#search").keyup(function() {
       var text = $(this).val();
-      $.ajax({
-        url: "/suggestions",
-        type: "get",
-        data: {
-          jsdata: text
-        },
-        success: function(response) {
-          $("#links").html(JSON.stringify(response));
-        },
-        error: function(xhr) {
-          console.log("Error in retrieving search results");
-        }
-      });
+      if (text.length > 2) {
+        $.ajax({
+          url: "/suggestions",
+          type: "get",
+          data: {
+            jsdata: text
+          },
+          success: function(response) {
+            r = JSON.stringify(response);
+            if (r != "[]") {
+              r = r.replace(/\[\"/g, "");
+              r = r.replace(/\"\]/g, "");
+              r = r.replace(/\",\"/g, "");
+              r = r.replace(/\\\"/g, "\"");
+              r = scaleVideo(r)
+              $("#results").html(r);
+            } else {
+              $("#results").html("");
+            }
+          },
+          error: function(xhr) {
+            console.log("Error in retrieving search results");
+          }
+        });
+      }
     });
   </script>
+
   {% for l in links %}
   {{ l }}<br>
   {% endfor %}

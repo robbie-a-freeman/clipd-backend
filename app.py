@@ -61,17 +61,32 @@ def changelog():
 def suggestions():
     print("in suggestions")
     text = request.args.get('jsdata')
-
-    suggestions_list = []
-    links = []
+    codes = []
+    queryTerms = text.split(" ") # use later to search for specific terms like map
     if text:
+        # Assumption: there better only by one instance of 1vX. if not takes the first one
+        clutchKills = -1 # -1 means no requirement
+        i = text.find("1v")
+        if i > -1 and len(text) - i > 2:
+            clutchKills = int(text[i + 2])
+            if clutchKills and 0 <= clutchKills and 5 >= clutchKills: # if there's a number after v
+                clutchKills = int(text[i + 2])
+            else:
+                clutchKills = -1
 
         for d in data:
-            links.append(d[0])
+            if queryRequirements(text) and (text in d or d[15] == clutchKills):
+                codes.append(d[0])
+
 
         print("out suggestions")
 
-    return jsonify(links)
+    return jsonify(codes)
+
+def queryRequirements(q):
+    if q == 'Y' or q == 'N':
+        return False
+    return True
 
 # basic 404 page. Hopefully isn't called all that often TODO: implement
 @app.errorhandler(404)

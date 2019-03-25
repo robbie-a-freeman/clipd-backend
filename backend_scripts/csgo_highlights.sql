@@ -3,8 +3,9 @@ CREATE database csgo_highlights;
 use csgo_highlights;
 
 CREATE TABLE videos(
-link VARCHAR(512) NOT NULL,
+code VARCHAR(512) NOT NULL,
 event VARCHAR(64) NULL,
+map VARCHAR(32) NOT NULL,
 casting FLOAT CHECK (casting >= 1.0 AND casting <= 5.0),
 significance FLOAT CHECK (significance >= 1.0 AND significance <= 5.0),
 intelligence FLOAT CHECK (intelligence >= 1.0 AND intelligence <= 5.0),
@@ -23,8 +24,9 @@ weapons VARCHAR(32) NOT NULL
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=AzeuySdai40',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/AzeuySdai40" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'PGL Major Krakow 2017',
+'de_inferno',
 3.0,
 3.0,
 5.0,
@@ -42,8 +44,9 @@ INSERT INTO videos VALUES(
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=yJifD2IEgx4',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/yJifD2IEgx4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'PGL Regional Minor Championship Europe - ELEAGUE Major 2017',
+'de_mirage',
 3.0,
 2.0,
 3.0,
@@ -61,8 +64,9 @@ INSERT INTO videos VALUES(
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=1NN1CjhH7rA',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/1NN1CjhH7rA" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'ESL One Katowice 2015',
+'de_inferno',
 5.0,
 3.0,
 2.0,
@@ -80,8 +84,9 @@ INSERT INTO videos VALUES(
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=W9Jbo4Dv7vc',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/W9Jbo4Dv7vc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'ESL One Cologne 2015',
+'de_dust2',
 4.5,
 5.0,
 2.5,
@@ -99,8 +104,9 @@ INSERT INTO videos VALUES(
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=W9Jbo4Dv7vc',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/W9Jbo4Dv7vc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'ESL One Cologne 2015',
+'de_dust2',
 5.0,
 4.0,
 3.5,
@@ -118,8 +124,9 @@ INSERT INTO videos VALUES(
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=cjOVXdarUTs',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/cjOVXdarUTs" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'MLG Major Championship: Columbus 2016',
+'de_mirage',
 5.0,
 5.0,
 2.0,
@@ -137,8 +144,9 @@ INSERT INTO videos VALUES(
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=kUSN6u5CSRE',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/kUSN6u5CSRE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'ESL One Cologne 2016',
+'de_cache',
 5.0,
 5.0,
 2.0,
@@ -156,8 +164,9 @@ INSERT INTO videos VALUES(
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=PO1G0bmWurc',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/PO1G0bmWurc" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'ESL One New York 2016',
+'de_dust2',
 4.0,
 2.5,
 3.0,
@@ -175,8 +184,9 @@ INSERT INTO videos VALUES(
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=qLVIgyrRk28',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/qLVIgyrRk28" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'ESL One New York 2016',
+'de_cbble',
 5.0,
 4.0,
 3.5,
@@ -194,8 +204,9 @@ INSERT INTO videos VALUES(
 );
 
 INSERT INTO videos VALUES(
-'https://www.youtube.com/watch?v=dmrIfz1TN00',
+'<iframe width="560" height="315" src="https://www.youtube.com/embed/dmrIfz1TN00" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
 'MLG Major Championship: Columbus 2016',
+'de_cache',
 5.0,
 4.0,
 4.5,
