@@ -75,7 +75,7 @@ def suggestions():
                 clutchKills = -1
 
         for d in data:
-            if queryRequirements(text) and (text in d or d[15] == clutchKills):
+            if queryRequirements(text) and (text in d or text.lower() in d or d[15] == clutchKills) and d[0] not in codes:
                 codes.append(d[0])
 
 
