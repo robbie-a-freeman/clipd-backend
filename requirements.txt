@@ -10,3 +10,4 @@ pygobject>=3.26.1
 pyxdg==0.25
 SecretStorage==2.3.1
 six==1.11.0
+libgirepository1.0-dev>=1.42.0
