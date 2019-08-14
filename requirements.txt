@@ -2,3 +2,4 @@ Flask
 Flask-MySQL
 gunicorn
 bs4
+psycopg2
