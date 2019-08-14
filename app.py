@@ -38,6 +38,10 @@ import psycopg2
 DATABASE_URL = os.environ['DATABASE_URL'] # config var in Heroku
 try:
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM videos")
+    data = cur.fetchall()
+    cur.close()
     conn.close()
     print("connected!")
 except:
