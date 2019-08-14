@@ -37,11 +37,11 @@ if __name__ == "__main__":
 import psycopg2
 DATABASE_URL = os.environ['postgresql-convex-91631']
 try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-        conn.close()
-        print("connected!")
-    except:
-        print("not connected!")
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    conn.close()
+    print("connected!")
+except:
+    print("not connected!")
 
 
 # loads home
