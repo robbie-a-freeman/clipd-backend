@@ -38,8 +38,10 @@ import psycopg2
 
 # Environmental variables
 DATABASE_URL = os.environ['DATABASE_URL']
-SSL_MODE = os.environ['SSL_MODE']
-if not SSL_MODE: SSL_MODE='require' # default is requiring ssl
+try:
+    SSL_MODE = os.environ['SSL_MODE']
+except KeyError:
+    SSL_MODE='require' # default is requiring ssl
 
 try:
     conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
