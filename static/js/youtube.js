@@ -13,9 +13,23 @@ function scaleVideo(code) { // assuming that the code is common YT embed code
   startingWidth = 560;
   startingHeight = 315;
 
-  marginW = ($("iframe").outerWidth(true) - $("iframe").outerWidth(false)) / 2;
-  w = (window.innerWidth - 5 * marginW) / 4; // 5 margins, 4 video elements
-  ratio = startingHeight / startingWidth;
-  h = ratio * w;
+  marginW = calcFrontpageVideoMarginW();
+  console.log("marginw: " + marginW);
+  w = calcFrontpageVideoWidth(marginW);
+  console.log("w: " + w);
+  //ratio = startingHeight / startingWidth;
+  h = calcFrontpageVideoHeight(w);
+  console.log("h: " + h);
   return changeHeight(changeWidth(code, w), h);
+}
+
+function calcFrontpageVideoMarginW() {
+  return 40;
+  //return ($("iframe").outerWidth(true) - $("iframe").outerWidth(false)) / 2;
+}
+function calcFrontpageVideoWidth(marginW) {
+  return (window.innerWidth - 5 * marginW) / 4; // 5 margins, 4 video elements
+}
+function calcFrontpageVideoHeight(width, defaultW = 560, defaultH = 315) {
+  return defaultH / defaultW * width;
 }

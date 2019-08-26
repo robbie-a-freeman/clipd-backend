@@ -36,34 +36,60 @@
   <h1>Search clips</h1><br>
   <div class="search-container">
     <form>
-      <input style="width:600px;" type="text" placeholder="ex. s1mple 1v2, best aces" id="search">
+      <input onkeypress="javascript: return (event.which == 13 ? false : true);console.log(event.which)" style="width:600px;" type="text" placeholder="ex. s1mple 1v2, best aces" id="search">
     </form>
   </div>
   <br>
   <div id="results">Try searching for something!</div>
   <script src="../static/js/youtube.js"></script>
   <script>
-    $("#search").keyup(function() {
-      var text = $(this).val();
-      if (text.length > 2) {
-        $.ajax({
-          url: "/suggestions",
-          type: "get",
-          data: {
-            jsdata: text
-          },
-          success: function(response) {
-            r = JSON.stringify(response);
-            if (r != "[]") {
-              r = r.replace(/\[\"/g, "");
-              r = r.replace(/\"\]/g, "");
-              r = r.replace(/\",\"/g, "");
-              r = r.replace(/\\\"/g, "\"");
-              r = scaleVideo(r)
-              $("#results").html(r);
-            } else {
+    var previousText = ""
+      $("#search").keyup(function() {
+        var text = $(this).val();
+        if (previousText !== text && text.length > 2) {
+          console.log("ajax  called");
+          $.ajax({
+            url: "/search",
+            type: "get",
+            data: {
+              jsdata: text
+            },
+            success: function(response) {
+              console.log("success called");
+              var r = response;
+              console.log(r);
               $("#results").html("");
-            }
+              if (r !== undefined && r.length) {
+                var videoWidthMargin = calcFrontpageVideoMarginW();
+                var videoWidth = calcFrontpageVideoWidth(videoWidthMargin);
+                var videoHeight = calcFrontpageVideoHeight(videoWidth);
+                var code, player, event_, v;
+                for (var i = 0; i < r.length; i++) {
+                  v = r[i];
+                  code = v[0];
+                  player = v[1];
+                  event_ = v[2];
+                  code = code.replace(/\[\"/g, "");
+                  code = code.replace(/\"\]/g, "");
+                  code = code.replace(/\",\"/g, "");
+                  code = code.replace(/\\\"/g, "\"");
+                  code = scaleVideo(code);
+                  var $div = $("<div>", {id: i});
+                  $($div).attr("width", videoWidth);
+                  $($div).attr("height", videoHeight);
+                  $($div).attr("margin-left", videoWidthMargin / 2);
+                  $($div).attr("margin-right", videoWidthMargin / 2);
+                  $($div).html(code);
+                  var $lildiv = $("<div>", {id: i + "-lil"});
+                  var $a = $("<a>", {href: "#"});
+                  $($lildiv).append("<br>" + player);
+                  $($lildiv).append("<br>" + event_);
+                  $($a).append($lildiv);
+                  $($div).append($a);
+                  $('#results').append($div);
+                  console.log("exec");
+                }
+              }
           },
           error: function(xhr) {
             console.log("Error in retrieving search results");
@@ -72,10 +98,6 @@
       }
     });
   </script>
-
-  {% for l in links %}
-  {{ l }}<br>
-  {% endfor %}
 
 </div>
 {% endblock %}

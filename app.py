@@ -35,17 +35,22 @@ if __name__ == "__main__":
     app.run()
 
 import psycopg2
-DATABASE_URL = os.environ['DATABASE_URL'] # config var in Heroku
+
+# Environmental variables
+DATABASE_URL = os.environ['DATABASE_URL']
+SSL_MODE = os.environ['SSL_MODE']
+if not SSL_MODE: SSL_MODE='require' # default is requiring ssl
+
 try:
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
     cur = conn.cursor()
     cur.execute("SELECT * FROM videos")
     data = cur.fetchall()
     cur.close()
     conn.close()
-    print("connected!")
+    print("connected to psotgres!")
 except:
-    print("not connected!")
+    print("not connected to postgres!")
 
 
 # loads home
@@ -56,35 +61,41 @@ def changelog():
     fetch.fetchHomePage()
     return render_template('history.html')
 
-# 2/27/19 - experimental route that pulls searches
-@app.route('/suggestions')
-def suggestions():
-    print("in suggestions")
+@app.route('/search')
+def search():
+    print("in search")
     text = request.args.get('jsdata')
-    codes = []
-    queryTerms = text.split(" ") # use later to search for specific terms like map
-    if text:
-        # Assumption: there better only by one instance of 1vX. if not takes the first one
-        clutchKills = -1 # -1 means no requirement
-        i = text.find("1v")
-        if i > -1 and len(text) - i > 2:
-            clutchKills = int(text[i + 2])
-            if clutchKills and 0 <= clutchKills and 5 >= clutchKills: # if there's a number after v
+    results = []
+    # each comma separated group represents and AND clause
+    for p in text.split(','):
+        queryTerms = p.split(" ") # use later to search for specific terms like map
+        phraseResults = []
+        if text:
+            # Assumption: there better only by one instance of 1vX. if not takes the first one
+            clutchKills = -1 # -1 means no requirement
+            i = text.find("1v")
+            if i > -1 and len(text) - i > 2:
                 clutchKills = int(text[i + 2])
-            else:
-                clutchKills = -1
+                if clutchKills and 0 <= clutchKills and 5 >= clutchKills: # if there's a number after v
+                    clutchKills = int(text[i + 2])
+                else:
+                    clutchKills = -1
 
-        for d in data:
-            if queryRequirements(text) and (text in d or text.lower() in d or d[15] == clutchKills) and d[0] not in codes:
-                codes.append(d[0])
+            for d in data:
+                if queryRequirements(text) and (text in d or text.lower() in d or d[15] == clutchKills) and [d[0], d[9], d[1]] not in phraseResults:
+                    phraseResults.append([d[0], d[9], d[1]])
+        for r in phraseResults:
+            if r not in results:
+                results.append(r)
 
 
-        print("out suggestions")
+    print("out search")
 
-    return jsonify(codes)
+    return jsonify(results)
 
+# this is a bad function TODO fix
 def queryRequirements(q):
-    if q == 'Y' or q == 'N':
+    if q == 'true' or q == 'false':
         return False
     return True
 
@@ -93,37 +104,17 @@ def queryRequirements(q):
 def page_not_found(error):
     return render_template('404.html'), 404
 
-# loads About page
+'''
+@app.route('/highlight/<videoId>')
+def load_highlight():
+    return render_template('highlight.html')'''
+
+'''# loads About page
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('about.html')'''
 
-# loads the page with list of articles TODO implement
-@app.route('/article/<query>')
-def article(query):
-        return render_template('articleFiles/' + query + '.html')
-
-# loads the page with list of articles TODO get rid of
-@app.route('/article')
-def exArticle():
-    return render_template('article.html')
-
-# loads the page with list of articles TODO implement
-@app.route('/articles')
-def articles():
-    return render_template('index.html')
-
-# loads contact page
+'''# loads contact page
 @app.route('/contact')
 def contact():
-    return render_template('contact.html')
-
-# loads Hall of History page
-@app.route('/history')
-def history():
-    return render_template('history.html')
-
-# loads Smoke Stop page
-@app.route('/smokestop')
-def smokestop():
-    return render_template('smokestop.html')
+    return render_template('contact.html')'''

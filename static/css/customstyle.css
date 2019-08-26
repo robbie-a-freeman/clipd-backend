@@ -17,6 +17,7 @@ body {
   background-color: #E6E6E644;
   min-height:800px;
   font-size: 18px;
+  font-family: sans-serif;
 }
 
 .subtext {
@@ -29,9 +30,9 @@ body footer {
   background-color: #E6E6E644;
 }
 
-.carousel-caption, a:link, a:visited, a:hover, a:active {
+/*.carousel-caption, a:link, a:visited, a:hover, a:active {
   color:white;
-}
+}*/
 
 .row {
   padding-top:20px;
