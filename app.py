@@ -50,7 +50,7 @@ try:
     data = cur.fetchall()
     cur.close()
     conn.close()
-    print("connected to psotgres!")
+    print("connected to postgres!")
 except:
     print("not connected to postgres!")
 
@@ -84,8 +84,8 @@ def search():
                     clutchKills = -1
 
             for d in data:
-                if queryRequirements(text) and (text in d or text.lower() in d or d[15] == clutchKills) and [d[0], d[9], d[1]] not in phraseResults:
-                    phraseResults.append([d[0], d[9], d[1]])
+                if queryRequirements(text) and (text in d or text.lower() in d or d[16] == clutchKills) and [d[1], d[10], d[2]] not in phraseResults:
+                    phraseResults.append([d[1], d[10], d[2]])
         for r in phraseResults:
             if r not in results:
                 results.append(r)
@@ -105,6 +105,14 @@ def queryRequirements(q):
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
+    
+@app.route('/testAPI')
+def testAPI():
+    return jsonify("OH")
+
+@app.route("/testreact")
+def testreact():
+    return render_template('test-react.html')
 
 '''
 @app.route('/highlight/<videoId>')

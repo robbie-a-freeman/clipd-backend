@@ -3,3 +3,5 @@ gunicorn
 bs4
 psycopg2
 python-dotenv
+pyjwt==1.7.1
+flask_cors==3.0.7
