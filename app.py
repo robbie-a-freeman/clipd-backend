@@ -120,9 +120,9 @@ def testAPI():
 def testreact():
     return render_template('test-react.html')
 
-@app.route("/signup")
+'''@app.route("/signup")
 def testreact():
-    return render_template('test-react.html')
+    return render_template('test-react.html') '''
 '''
 @app.route('/highlight/<videoId>')
 def load_highlight():
