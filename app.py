@@ -11,6 +11,7 @@ from flask import abort
 from flask import redirect
 from flask import url_for
 from flask import send_file
+from flask import flash
 
 import os
 import sys
@@ -54,9 +55,55 @@ try:
 except:
     print("not connected to postgres!")
 
+# setting up secret key
+# TODO make this environment var
+#app.secret_key = os.environ.get('SECRET_KEY', 'dev')
+app.secret_key = b'\xd2\xc7\xdd\xa4\xd7\xc7\xfb\x92\x88\x15\xbbF,3\xc7\x9d'
+
+# setting up Flask-Login manager
+from flask_login import LoginManager, login_required, login_user, logout_user
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+# initialize login form stuff
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, BooleanField
+class LoginForm(FlaskForm):
+    username = StringField('Username')
+    password = PasswordField('Password')
+    remember_me = BooleanField('Remember Me')
+    submit = SubmitField('Submit')
+
+# setting up Flask-Login user object
+from User import User
+def getUserById(id):
+    try:
+        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM Users WHERE Id = %s;', (id, ))
+        data = cur.fetchall()
+        cur.close()
+        conn.close()
+        
+        if data:
+            print("Successfully retrieved user")
+            return User(data[0][1], data[0][3], DATABASE_URL, SSL_MODE) # user, pass
+        else:
+            print("Failed to retrieve user: no user")
+            return None
+    except:
+        print("Failed to retrieve user: no connection")
+        return None
+@login_manager.user_loader
+def load_user(user_id):
+    return getUserById(user_id)
+
+
+# make sure that each request is redirected to https
+# TODO fix potential security vulnerability
 @app.before_request
 def before_request():
-    if request.url.startswith('http://'):
+    if SSL_MODE is 'require' and request.url.startswith('http://'):
         url = request.url.replace('http://', 'https://', 1)
         code = 301
         return redirect(url, code=code)
@@ -65,7 +112,7 @@ def before_request():
 @app.route('/')
 @app.route('/home')
 @app.route('/index')
-def changelog():
+def index():
     fetch.fetchHomePage()
     return render_template('history.html')
 
@@ -117,8 +164,57 @@ def testAPI():
     return jsonify("OH")
 
 @app.route("/testreact")
+@login_required
 def testreact():
     return render_template('test-react.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # Here we use a class of some kind to represent and validate our
+    # client-side form data. For example, WTForms is a library that will
+    # handle this for us, and we use a custom LoginForm to validate.
+    form = LoginForm()
+    if form.validate_on_submit():
+        # Login and validate the user.
+        # user should be an instance of your `User` class
+        # authenticate(User)
+        # TODO hash password from client to server
+        try:
+            conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
+            cur = conn.cursor()
+            cur.execute('SELECT password FROM Users WHERE Name = %s AND Password = crypt(%s, Password);', (request.form['username'], request.form['password']))
+            encryptedPassword = cur.fetchall()[0][0]
+            user = User(request.form['username'], encryptedPassword, DATABASE_URL, SSL_MODE)
+            cur.execute('SELECT Id FROM Users WHERE Name = %s AND Password = %s;', (user.username, user.password))
+            id = cur.fetchall()[0][0]
+            if id:
+                user.isAuthenticated = True
+                user.isActive = True
+                # bool returns True for any string, False for blank/None
+                print('before login_user')
+                login_user(user, remember = bool(request.form.get('remember_me')))
+                print('past login_user')
+                flash('Logged in successfully.')
+                assert(user.is_authenticated)
+                print("user authenticated")
+            else:
+                flash('Login failed.')
+                print("authentication failed: invalid credentials")
+                raise
+            cur.close()
+            conn.close()
+        except:
+            print("authentication failed: no connection to database - ", sys.exc_info()[0])
+            flash('Login failed.')
+        return redirect(url_for('index'))
+    return render_template('login.html', form=form)
+
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
 
 '''@app.route("/signup")
 def testreact():
