@@ -75,6 +75,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Submit')
 
 # setting up Flask-Login user object
+sys.path.insert(0, 'srv')
 from User import User
 def getUserById(id):
     try:
