@@ -80,3 +80,12 @@ h1, h2, h3 {
 iframe {
   margin:20px;
 }
+
+#results .video {
+  display: inline-block;
+  text-overflow: ellipsis;
+}
+
+#results {
+  vertical-align: top;
+}
