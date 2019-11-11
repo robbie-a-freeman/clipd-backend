@@ -1,10 +1,57 @@
-<!DOCTYPE html>
-<html>
-  <head>
-      <title>Flask React</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script src="static/js/bundle.js"></script>
-  </body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Flask React{% endblock %}
+
+{% block style %}
+<style>
+  /* Remove the navbar's default margin-bottom and rounded borders */
+  .navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+  }
+
+  /* Add a gray background color and some padding to the footer */
+  footer {
+    background-color: #f2f2f2;
+    padding: 25px;
+  }
+
+.carousel-inner img {
+    width: 100%; /* Set width to 100% */
+    margin: auto;
+    min-height:200px;
+}
+
+/* Hide the carousel text when the screen is less than 600 pixels wide */
+@media (max-width: 600px) {
+  .carousel-caption {
+    display: none;
+  }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content container text-center">
+  <h1>Search clips</h1><br>
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <ul>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endwith %}
+  <div class="search-container">
+    <form>
+      <input onkeypress="javascript: return (event.which == 13 ? false : true);console.log(event.which)" style="width:600px;" type="text" placeholder="ex. s1mple 1v2, best aces" id="search">
+    </form>
+  </div>
+  <br>
+  <div id="results">Try searching for something!</div>
+  <script src="../static/js/youtube.js"></script>
+  <script src="static/js/bundle.js"></script>
+  <script src="static/js/home.js"></script>
+</div>
+{% endblock %}
