@@ -48,69 +48,125 @@
       <input onkeypress="javascript: return (event.which == 13 ? false : true);console.log(event.which)" style="width:600px;" type="text" placeholder="ex. s1mple 1v2, best aces" id="search">
     </form>
   </div>
+  <div class="starContainer">
+    <div id="stars" class="Stars" style="--rating: 2.3;" aria-label="Rating of this product is 2.3 out of 5."></div>
+  </div>
+  <script>
+    $('#stars').on("click", function(e) {
+      leftOffset = $('#stars').offset().left;
+      topOffset = $('#stars').offset().top;
+      var xPosition = e.clientX - leftOffset;
+      var maxXPosition = $('#stars').width();
+      var rating = xPosition / maxXPosition * 5.0;
+      $(this).attr('style', "--rating: " + rating + ";");
+    }
+  </script>
   <br>
   <div id="results">Try searching for something!</div>
   <script src="../static/js/youtube.js"></script>
   <script>
-    var previousText = ""
-      $("#search").keyup(function() {
-        var text = $(this).val();
-        if (previousText !== text && text.length > 2) {
-          console.log("ajax  called");
-          $.ajax({
-            url: "/search",
-            type: "get",
-            data: {
-              jsdata: text
-            },
-            success: function(response) {
-              console.log("success called");
-              var r = response;
-              console.log(r);
-              $("#results").html("");
-              if (r !== undefined && r.length) {
-                var videoWidthMargin = calcFrontpageVideoMarginW();
-                var videoWidth = calcFrontpageVideoWidth(videoWidthMargin);
-                var videoHeight = calcFrontpageVideoHeight(videoWidth);
-                var code, player, event_, v;
-                for (var i = 0; i < r.length; i++) {
-                  v = r[i];
-                  code = v[0];
-                  player = v[1];
-                  event_ = v[2];
-                  code = code.replace(/\[\"/g, "");
-                  code = code.replace(/\"\]/g, "");
-                  code = code.replace(/\",\"/g, "");
-                  code = code.replace(/\\\"/g, "\"");
-                  code = scaleVideo(code);
-                  var $div = $("<div>", {id: i});
-                  $($div).attr("class", "video");
-                  $($div).attr("width", videoWidth);
-                  $($div).attr("height", videoHeight + 70);
-                  $($div).attr("margin-left", videoWidthMargin / 2);
-                  $($div).attr("margin-right", videoWidthMargin / 2);
-                  $($div).attr("text-align", "center");
-                  $($div).html(code);
-                  var $lildiv = $("<div>", {id: i + "-lil"});
-                  $($lildiv).attr("width", videoWidth);
-                  var $a = $("<a>", {href: "#"});
-                  $($lildiv).append("<br>");
-                  $($lildiv).append("<p style='display:inline-block;'>" + player + "</p>");
-                  $($lildiv).append("<br>");
-                  $($lildiv).append("<p style='display:inline-block;'>" + event_ + "</p>");
-                  $($a).append($lildiv);
-                  $($div).append($a);
-                  $('#results').append($div);
-                  console.log("exec");
-                }
-              }
-          },
-          error: function(xhr) {
-            console.log("Error in retrieving search results");
+  var previousText = "";
+  $("#search").keyup(function() {
+    var text = $(this).val();
+    if (previousText !== text && text.length > 2) {
+      console.log("ajax  called");
+      $.ajax({
+        url: "/search",
+        type: "get",
+        data: {
+          jsdata: text
+        },
+        success: function(response) {
+          console.log("success called");
+          var r = response;
+          console.log(r);
+          $("#results").html("");
+          if (r !== undefined && r.length) {
+            var videoWidthMargin = calcFrontpageVideoMarginW();
+            var videoWidth = calcFrontpageVideoWidth(videoWidthMargin);
+            var videoHeight = calcFrontpageVideoHeight(videoWidth);
+            var code, player, event_, ratingButton, v;
+            /*
+            const NUMBER_OF_COLUMNS = 4;
+            var cols = []
+            for (var i = 0; i < NUMBER_OF_COLUMNS; i++) {
+              var col = $("<div>");
+              $(col).attr("class", "resultColumn");
+              cols.push(col);
+            }*/
+            for (var i = 0; i < r.length; i++) {
+              v = r[i];
+              code = v[0];
+              player = v[1];
+              event_ = v[2];
+              code = code.replace(/\[\"/g, "");
+              code = code.replace(/\"\]/g, "");
+              code = code.replace(/\",\"/g, "");
+              code = code.replace(/\\\"/g, "\"");
+              code = scaleVideo(code);
+              var $div = $("<div>", {id: i});
+              $($div).attr("class", "videoEntry");
+              $($div).attr("width", videoWidth);
+              $($div).attr("height", videoHeight + 70);
+              $($div).attr("margin-left", videoWidthMargin / 2);
+              $($div).attr("margin-right", videoWidthMargin / 2);
+              $($div).attr("text-align", "center");
+              $($div).html(code);
+              var $lildiv = $("<div>", {id: i + "-lil"});
+              $($lildiv).attr("width", videoWidth);
+              var $a = $("<a>", {href: "#"});
+              $($lildiv).append("<br>");
+              $($lildiv).append("<p style='display:inline-block;'>" + player + "</p>");
+              $($lildiv).append("<br>");
+              $($lildiv).append("<p style='display:inline-block;'>" + event_ + "</p>");
+              $($lildiv).append("<br>");
+              
+              // append rating button to each entry
+              ratingButton = document.createElement("button");
+              $(ratingButton).html("Rate this 5 stars!");
+              $(ratingButton).attr("class", "ratingButton");
+              $(ratingButton).attr("value", 5.0);
+              $(ratingButton).attr("style", "display:inline-block;");
+              // add button listener
+              $(ratingButton).attr("onclick", "sendRating($(this));");
+              
+              $($lildiv).append(ratingButton);
+
+              $($a).append($lildiv);
+              $($div).append($a);
+              $(results).append($div);
+              /*$(cols[i % NUMBER_OF_COLUMNS]).append($div);*/
+              console.log("exec");
+            }
+            /*for (var i = 0; i < NUMBER_OF_COLUMNS; i++) {
+              $('#results').append(col[i]);
+            }*/
+            
           }
-        });
+      },
+      error: function(xhr) {
+        console.log("Error in retrieving search results");
       }
     });
+    }
+  });
+  </script>
+  <script>
+   function sendRating(button) {
+      var rating = button.val();
+        console.log("sending rating")
+        $.ajax({
+          url: "/updateRating/1&1&4.5", // TODO fix
+          type: "post",
+          data: {jsdata: rating},
+          success: function(response) {
+            console.log(response);
+          },
+          error: function(xhr) {
+            console.log(xhr);
+          }
+        });
+    }
   </script>
 
 </div>
