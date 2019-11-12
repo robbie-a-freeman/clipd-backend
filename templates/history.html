@@ -49,17 +49,32 @@
     </form>
   </div>
   <div class="starContainer">
+    <!-- TODO make sure to load the previous rating dynamically-->
     <div id="stars" class="Stars" style="--rating: 2.3;" aria-label="Rating of this product is 2.3 out of 5."></div>
   </div>
   <script>
     $('#stars').on("click", function(e) {
+      // frontend
       leftOffset = $('#stars').offset().left;
       topOffset = $('#stars').offset().top;
       var xPosition = e.clientX - leftOffset;
       var maxXPosition = $('#stars').width();
       var rating = xPosition / maxXPosition * 5.0;
       $(this).attr('style', "--rating: " + rating + ";");
-    }
+      // backend
+      console.log("sending rating")
+      $.ajax({
+        url: "/updateRating/1&1&1&4.5", // TODO fix
+        type: "post",
+        data: {jsdata: rating},
+        success: function(response) {
+          console.log(response);
+        },
+        error: function(xhr) {
+          console.log(xhr);
+        }
+      });
+    });
   </script>
   <br>
   <div id="results">Try searching for something!</div>
@@ -156,7 +171,7 @@
       var rating = button.val();
         console.log("sending rating")
         $.ajax({
-          url: "/updateRating/1&1&4.5", // TODO fix
+          url: "/updateRating/1&1&4.5&1", // TODO fix
           type: "post",
           data: {jsdata: rating},
           success: function(response) {

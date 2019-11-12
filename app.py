@@ -165,27 +165,27 @@ def testAPI():
     return jsonify("OH")
 
 # input rating into Ratings table upon user post request
-@app.route('/updateRating/<videoId>&<userId>&<rating>', methods=['POST'])
-def inputRating(videoId, userId, rating):
+@app.route('/updateRating/<videoId>&<userId>&<categoryId>&<rating>', methods=['POST'])
+def inputRating(videoId, userId, categoryId, rating):
     # connect to db and send command
     print('input received')
     try:
         conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
         cur = conn.cursor()
-        cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s;', (videoId, userId))
+        cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (videoId, userId, categoryId))
         # if rating exists, update it
         if cur.fetchone() != None:
-            cur.execute('UPDATE Ratings SET rating=%s WHERE VideoId=%s AND UserId=%s;', (rating, videoId, userId))
+            cur.execute('UPDATE Ratings SET rating=%s WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (rating, videoId, userId, categoryId))
         # if rating doesn't exist, insert into db
         else:
-            cur.execute('INSERT INTO Ratings VALUES(DEFAULT, %s, %s, %s, DEFAULT);', (videoId, userId, rating))
+            cur.execute('INSERT INTO Ratings VALUES(DEFAULT, %s, %s, %s, %s, DEFAULT);', (videoId, userId, categoryId, rating))
         conn.commit()
-        print('Sent rating', rating, 'for video', videoId, 'for user', userId, 'successfully.')
+        print('Sent rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId, 'successfully.')
         cur.close()
         conn.close()
         return "test success"
     except:
-        print('Failed to send rating', rating, 'for video', videoId, 'for user', userId)
+        print('Failed to send rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId)
         return "test failed"
 
 @app.route('/login', methods=['GET', 'POST'])
