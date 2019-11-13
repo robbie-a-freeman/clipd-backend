@@ -41,7 +41,7 @@ class User:
     # (without being forced of course).
     @property
     def is_active(self):
-        return self.isAuthenticated
+        return self.is_authenticated
 
     # This property should return True if this is an anonymous user.
     # (Actual users should return False instead.)

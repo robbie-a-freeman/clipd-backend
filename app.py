@@ -129,7 +129,6 @@ def index():
         print('Failed to retrieve rating categories')
         return render_template('history.html')
     
-    
 
 @app.route('/search')
 def search():
@@ -160,7 +159,6 @@ def search():
 
 
     print("out search")
-
     return jsonify(results)
 
 # this is a bad function TODO fix
