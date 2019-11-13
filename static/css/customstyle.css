@@ -1,5 +1,8 @@
-html, body {
+html {
   height: 100%;
+}
+
+html, body {
   min-height: 100%;
 }
 
@@ -14,16 +17,17 @@ html, body {
 
 body {
   color:#000;
-  background-color: #E6E6E644;
+  background-color:#E6E6E644;
   min-height:800px;
-  font-size: 18px;
+  font-size: 14px;
   font-family: sans-serif;
   position:relative;
+  padding-bottom:120px;
 }
 
 .subtext {
   color:#4C4C4B;
-  margin:15px;
+  margin:12px;
 }
 
 body footer {
@@ -38,9 +42,6 @@ body footer {
 .row {
   padding-top:20px;
   padding-bottom:20px;
-}
-
-nav {
 }
 
 .navbar>.container .navbar-brand, .navbar>.container-fluid .navbar-brand, .navbar-inverse .navbar-nav>li>a {
@@ -119,7 +120,7 @@ iframe {
   line-height: 1;
 }
 
-.Stars::before {
+.Stars::after {
   content: '★★★★★';
   letter-spacing: 3px;
   background: linear-gradient(90deg, var(--star-background) var(--percent), var(--star-color) var(--percent));
@@ -128,7 +129,7 @@ iframe {
 }
 
 .starContainer {
-  --star-size: 10px;
+  --star-size: 12px;
   --star-color: #fff;
   --star-background: #fc0;
 }
