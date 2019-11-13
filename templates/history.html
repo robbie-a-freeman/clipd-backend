@@ -144,9 +144,9 @@
                 //$(ratingButton).attr("onclick", "sendRating($(this));");
                 $(ratingButton).on("click", function(e) {
                   // frontend
-                  leftOffset = $(ratingButton).offset().left;
+                  leftOffset = $(this).offset().left;
                   var xPosition = e.clientX - leftOffset;
-                  var maxXPosition = $(ratingButton).width();
+                  var maxXPosition = $(this).width();
                   var rating = xPosition / maxXPosition * 5.0;
                   $(this).attr('style', "--rating: " + rating + ";");
                   // backend
