@@ -129,9 +129,9 @@ def index():
         print('Failed to retrieve rating categories')
         return render_template('history.html')
     
-
-@app.route('/search')
-def search():
+# TODO make secure
+@app.route('/search&<userId>')
+def search(userId):
     print("in search")
     text = request.args.get('jsdata')
     results = []
@@ -152,13 +152,33 @@ def search():
 
             for d in data:
                 if queryRequirements(text) and (text in d or text.lower() in d or d[16] == clutchKills) and [d[1], d[10], d[2]] not in phraseResults:
-                    phraseResults.append([d[0], d[1], d[10], d[2]])
+                    # get user's past reviews for selected videos
+                    try:
+                        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
+                        cur = conn.cursor()
+                        cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s;', (d[0], userId))
+                        u = cur.fetchall()
+                        print(u)
+                        ur = []
+                        for j in u:
+                            # append rating categoryid and rating number
+                            print('j:', j)
+                            ur.append(str(j[3]))
+                            ur.append(str(j[4]))
+                        print('Received ratings for video', d[0], 'for user', userId, 'successfully.')
+                        cur.close()
+                        conn.close()
+                    except:
+                        print('Failed to send ratings for video', d[0], 'for user', userId, 'because', sys.exc_info()[1])
+                        ur = []
+                    phraseResults.append([d[0], d[1], d[10], d[2], ur])
         for r in phraseResults:
             if r not in results:
                 results.append(r)
 
 
     print("out search")
+    print(results)
     return jsonify(results)
 
 # this is a bad function TODO fix
