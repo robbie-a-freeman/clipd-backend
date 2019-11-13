@@ -32,6 +32,7 @@
 {% endblock %}
 
 {% block content %}
+<meta id="rating-categories" categories="{{ categories }}">
 <div class="content container text-center">
   <h1>Search clips</h1><br>
   {% with messages = get_flashed_messages() %}
@@ -48,39 +49,27 @@
       <input onkeypress="javascript: return (event.which == 13 ? false : true);console.log(event.which)" style="width:600px;" type="text" placeholder="ex. s1mple 1v2, best aces" id="search">
     </form>
   </div>
-  <div class="starContainer">
-    <!-- TODO make sure to load the previous rating dynamically-->
-    <div id="stars" class="Stars" style="--rating: 2.3;" aria-label="Rating of this product is 2.3 out of 5."></div>
-  </div>
-  <script>
-    $('#stars').on("click", function(e) {
-      // frontend
-      leftOffset = $('#stars').offset().left;
-      topOffset = $('#stars').offset().top;
-      var xPosition = e.clientX - leftOffset;
-      var maxXPosition = $('#stars').width();
-      var rating = xPosition / maxXPosition * 5.0;
-      $(this).attr('style', "--rating: " + rating + ";");
-      // backend
-      console.log("sending rating")
-      $.ajax({
-        url: "/updateRating/1&1&1&4.5", // TODO fix
-        type: "post",
-        data: {jsdata: rating},
-        success: function(response) {
-          console.log(response);
-        },
-        error: function(xhr) {
-          console.log(xhr);
-        }
-      });
-    });
-  </script>
   <br>
   <div id="results">Try searching for something!</div>
   <script src="../static/js/youtube.js"></script>
   <script>
   var previousText = "";
+  var categories = $("#rating-categories").attr('categories');
+  categories = categories.substring(1, categories.length - 1);
+  categories = categories.replace(/["']/g, "");
+  categories = categories.split("],");
+  var categoryIds = []
+  var categoryNames = []
+  for (var i = 0; i < categories.length; i++) {
+    var categoryTuple = categories[i].replace(/\[/g, '').replace(/]/g, '')
+    var id = categoryTuple.split(",")[0].trim();
+    categoryIds.push(id);
+    var name = categoryTuple.split(",")[1].trim();
+    categoryNames.push(name);
+  }
+  console.log(categories);
+  console.log(categoryIds);
+  console.log(categoryNames);
   $("#search").keyup(function() {
     var text = $(this).val();
     if (previousText !== text && text.length > 2) {
@@ -111,9 +100,10 @@
             }*/
             for (var i = 0; i < r.length; i++) {
               v = r[i];
-              code = v[0];
-              player = v[1];
-              event_ = v[2];
+              id = v[0];
+              code = v[1];
+              player = v[2];
+              event_ = v[3];
               code = code.replace(/\[\"/g, "");
               code = code.replace(/\"\]/g, "");
               code = code.replace(/\",\"/g, "");
@@ -129,26 +119,61 @@
               $($div).html(code);
               var $lildiv = $("<div>", {id: i + "-lil"});
               $($lildiv).attr("width", videoWidth);
-              var $a = $("<a>", {href: "#"});
+              //var $a = $("<a>", {href: "#"});
               $($lildiv).append("<br>");
               $($lildiv).append("<p style='display:inline-block;'>" + player + "</p>");
               $($lildiv).append("<br>");
               $($lildiv).append("<p style='display:inline-block;'>" + event_ + "</p>");
               $($lildiv).append("<br>");
               
-              // append rating button to each entry
-              ratingButton = document.createElement("button");
-              $(ratingButton).html("Rate this 5 stars!");
-              $(ratingButton).attr("class", "ratingButton");
-              $(ratingButton).attr("value", 5.0);
-              $(ratingButton).attr("style", "display:inline-block;");
-              // add button listener
-              $(ratingButton).attr("onclick", "sendRating($(this));");
-              
-              $($lildiv).append(ratingButton);
+              // append rating buttons to each entry
+              for (var j = 0; j < categoryIds.length; j++) {
+                var categoryId = categoryIds[j];
+                var ratingsContainer = $("<div>");
+                var ratingsLabel = $("<p>");
+                $(ratingsLabel).html(categoryNames[j])
+                $(ratingsContainer).attr("class", "starContainer");
+                var ratingButton = $("<div>", {id: "stars" + i});
+                $(ratingButton).attr("class", "Stars");
+                $(ratingButton).attr("value", 5.0);
+                $(ratingButton).attr("videoId", id);
+                $(ratingButton).attr("catId", categoryId);
+                $(ratingButton).attr("style", "--rating: 2.3;");
+                $(ratingButton).attr("aria-label", "Rating of this product is 2.3 out of 5.");
+                // add button listener
+                //$(ratingButton).attr("onclick", "sendRating($(this));");
+                $(ratingButton).on("click", function(e) {
+                  // frontend
+                  leftOffset = $(ratingButton).offset().left;
+                  var xPosition = e.clientX - leftOffset;
+                  var maxXPosition = $(ratingButton).width();
+                  var rating = xPosition / maxXPosition * 5.0;
+                  $(this).attr('style', "--rating: " + rating + ";");
+                  // backend
+                  console.log("sending rating")
+                  //var url = "/updateRating/1&1&1&4.5";
+                  var uid = $("#user-id").data()["name"];
+                  var url = "/updateRating/" + $(this).attr("videoId") + "&" + uid + "&" + $(this).attr("catId") + "&" + rating;
+                  $.ajax({
+                    url: url,
+                    type: "post",
+                    data: {jsdata: rating},
+                    success: function(response) {
+                      console.log(response);
+                    },
+                    error: function(xhr) {
+                      console.log(xhr);
+                    }
+                  });
+                });
+                $(ratingsContainer).append(ratingsLabel)
+                $(ratingsContainer).append(ratingButton);
+                $($lildiv).append(ratingsContainer);
+              }
 
-              $($a).append($lildiv);
-              $($div).append($a);
+              //$($a).append($lildiv);
+              //$($div).append($a);
+              $($div).append($lildiv);
               $(results).append($div);
               /*$(cols[i % NUMBER_OF_COLUMNS]).append($div);*/
               console.log("exec");
@@ -165,23 +190,6 @@
     });
     }
   });
-  </script>
-  <script>
-   function sendRating(button) {
-      var rating = button.val();
-        console.log("sending rating")
-        $.ajax({
-          url: "/updateRating/1&1&4.5&1", // TODO fix
-          type: "post",
-          data: {jsdata: rating},
-          success: function(response) {
-            console.log(response);
-          },
-          error: function(xhr) {
-            console.log(xhr);
-          }
-        });
-    }
   </script>
 
 </div>

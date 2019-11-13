@@ -7,6 +7,7 @@ from flask import Flask
 from flask import render_template
 from flask import request
 from flask import jsonify
+from flask import json
 from flask import abort
 from flask import redirect
 from flask import url_for
@@ -82,13 +83,12 @@ def getUserById(id):
         conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
         cur = conn.cursor()
         cur.execute('SELECT * FROM Users WHERE Id = %s;', (id, ))
-        data = cur.fetchall()
+        data = cur.fetchone()
         cur.close()
         conn.close()
-        
         if data:
             print("Successfully retrieved user")
-            return User(data[0][1], data[0][3], DATABASE_URL, SSL_MODE) # user, pass
+            return User(data[0], data[1], data[3], DATABASE_URL, SSL_MODE) # user, pass
         else:
             print("Failed to retrieve user: no user")
             return None
@@ -115,7 +115,21 @@ def before_request():
 @app.route('/index')
 def index():
     fetch.fetchHomePage()
-    return render_template('history.html')
+    try:
+        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM RatingCategories')
+        categories = cur.fetchall()
+        print(type(categories))
+        print(json.dumps(categories))
+        cur.close()
+        conn.close()
+        return render_template('history.html', categories=json.dumps(categories))
+    except:
+        print('Failed to retrieve rating categories')
+        return render_template('history.html')
+    
+    
 
 @app.route('/search')
 def search():
@@ -139,7 +153,7 @@ def search():
 
             for d in data:
                 if queryRequirements(text) and (text in d or text.lower() in d or d[16] == clutchKills) and [d[1], d[10], d[2]] not in phraseResults:
-                    phraseResults.append([d[1], d[10], d[2]])
+                    phraseResults.append([d[0], d[1], d[10], d[2]])
         for r in phraseResults:
             if r not in results:
                 results.append(r)
@@ -204,16 +218,13 @@ def login():
             cur = conn.cursor()
             cur.execute('SELECT password FROM Users WHERE Name = %s AND Password = crypt(%s, Password);', (request.form['username'], request.form['password']))
             encryptedPassword = cur.fetchall()[0][0]
-            user = User(request.form['username'], encryptedPassword, DATABASE_URL, SSL_MODE)
-            cur.execute('SELECT Id FROM Users WHERE Name = %s AND Password = %s;', (user.username, user.password))
+            cur.execute('SELECT Id FROM Users WHERE Name = %s AND Password = %s;', (request.form['username'], encryptedPassword))
             id = cur.fetchall()[0][0]
             if id:
-                user.isAuthenticated = True
-                user.isActive = True
                 # bool returns True for any string, False for blank/None
-                print('before login_user')
+                user = User(id, request.form['username'], encryptedPassword, DATABASE_URL, SSL_MODE)
+                print("user inited")
                 login_user(user, remember = bool(request.form.get('remember_me')))
-                print('past login_user')
                 flash('Logged in successfully.')
                 assert(user.is_authenticated)
                 print("user authenticated")

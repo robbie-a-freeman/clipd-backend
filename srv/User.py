@@ -4,8 +4,8 @@ class User:
     DATABASE_URL = ''
     SSL_MODE = ''
 
-    def __init__(self, u, p, db, ssl):
-        #self.id = i TODO
+    def __init__(self, i, u, p, db, ssl):
+        self.id = i
         self.username = u
         self.password = p
         self.DATABASE_URL = db
@@ -55,4 +55,4 @@ class User:
     # natively an int or some other type, you will need to convert
     # it to unicode.
     def get_id(self):
-        return 1
+        return self.id
