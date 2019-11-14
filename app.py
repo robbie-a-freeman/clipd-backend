@@ -151,7 +151,7 @@ def search(userId):
                     clutchKills = -1
 
             for d in data:
-                if queryRequirements(text) and (text in d or text.lower() in d or d[16] == clutchKills) and [d[1], d[10], d[2]] not in phraseResults:
+                if queryRequirements(text) and (text in d or text.lower() in d or d[10] == clutchKills) and [d[1], d[4], d[2]] not in phraseResults:
                     # get user's past reviews for selected videos
                     try:
                         conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
@@ -171,7 +171,7 @@ def search(userId):
                     except:
                         print('Failed to send ratings for video', d[0], 'for user', userId, 'because', sys.exc_info()[1])
                         ur = []
-                    phraseResults.append([d[0], d[1], d[10], d[2], ur])
+                    phraseResults.append([d[0], d[1], d[4], d[2], ur])
         for r in phraseResults:
             if r not in results:
                 results.append(r)
@@ -201,15 +201,28 @@ def testAPI():
 def inputRating(videoId, userId, categoryId, rating):
     # connect to db and send command
     print('input received')
+    rating = float(rating)
     try:
         conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
         cur = conn.cursor()
+        cur.execute('SELECT Total, Average FROM RatingAvgs WHERE VideoId=%s AND RatingCategoryId=%s;', (videoId, categoryId))
+        result = cur.fetchone()
         cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (videoId, userId, categoryId))
-        # if rating exists, update it
-        if cur.fetchone() != None:
+        oldRating = cur.fetchone()[4]
+        # if rating exists, remove old rating and insert new
+        if oldRating != None: # assumption: a rating exists, the rating average exists too
+            revertedRating = (result[0] * result[1] - oldRating) / (result[0] - 1)
+            newRating = (revertedRating * (result[0] - 1) + rating) / result[0]
+            cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newRating, result[0], videoId, categoryId))
             cur.execute('UPDATE Ratings SET rating=%s WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (rating, videoId, userId, categoryId))
         # if rating doesn't exist, insert into db
         else:
+            if result != None:
+                newTotal = result[0] + 1
+                newAvg = (newTotal * cur.fetchone()[1] + float(rating)) / (newTotal + 1)
+                cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newAvg, newTotal, videoId, categoryId))
+            else:
+                cur.execute('INSERT INTO RatingAvgs VALUES(DEFAULT, %s, %s, %s, %s);', (videoId, categoryId, 1, rating))
             cur.execute('INSERT INTO Ratings VALUES(DEFAULT, %s, %s, %s, %s, DEFAULT);', (videoId, userId, categoryId, rating))
         conn.commit()
         print('Sent rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId, 'successfully.')
@@ -217,7 +230,7 @@ def inputRating(videoId, userId, categoryId, rating):
         conn.close()
         return "test success"
     except:
-        print('Failed to send rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId)
+        print('Failed to send rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId, 'because', sys.exc_info()[0:2])
         return "test failed"
 
 @app.route('/login', methods=['GET', 'POST'])
