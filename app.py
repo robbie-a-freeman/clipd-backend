@@ -151,7 +151,7 @@ def search(userId):
                     clutchKills = -1
 
             for d in data:
-                if queryRequirements(text) and (text in d or text.lower() in d or d[10] == clutchKills) and [d[1], d[4], d[2]] not in phraseResults:
+                if queryRequirements(text) and (text in d or text.lower() in d or d[4] == clutchKills) and [d[1], d[4], d[2]] not in phraseResults:
                     # get user's past reviews for selected videos
                     try:
                         conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
@@ -208,17 +208,19 @@ def inputRating(videoId, userId, categoryId, rating):
         cur.execute('SELECT Total, Average FROM RatingAvgs WHERE VideoId=%s AND RatingCategoryId=%s;', (videoId, categoryId))
         result = cur.fetchone()
         cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (videoId, userId, categoryId))
-        oldRating = cur.fetchone()[4]
+        oldRatingRow = cur.fetchone()
         # if rating exists, remove old rating and insert new
-        if oldRating != None: # assumption: a rating exists, the rating average exists too
-            revertedRating = (result[0] * result[1] - oldRating) / (result[0] - 1)
+        if oldRatingRow != None: # assumption: a rating exists, the rating average exists too
+            revertedRating = (result[0] * result[1] - oldRatingRow[4]) / (result[0] - 1)
             newRating = (revertedRating * (result[0] - 1) + rating) / result[0]
             cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newRating, result[0], videoId, categoryId))
             cur.execute('UPDATE Ratings SET rating=%s WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (rating, videoId, userId, categoryId))
         # if rating doesn't exist, insert into db
         else:
             if result != None:
+                print("here")
                 newTotal = result[0] + 1
+                print("here")
                 newAvg = (newTotal * cur.fetchone()[1] + float(rating)) / (newTotal + 1)
                 cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newAvg, newTotal, videoId, categoryId))
             else:
