@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ videoTitle }}{% endblock %}
+
+{% block style %}
+<style>
+  /* Remove the navbar's default margin-bottom and rounded borders */
+  .navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+  }
+
+  /* Add a gray background color and some padding to the footer */
+  footer {
+    background-color: #f2f2f2;
+    padding: 25px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<meta id="rating-categories" categories="{{ categories }}">
+<meta id="video-code" code="{{ videoCode }}">
+
+<script src="../static/js/youtube.js"></script>
+<div id="video" class="content container text-center">
+    <script>
+        var code = $("#video-code").attr("code");
+        code = scaleVideo(code);
+        var player = $("<div>", {id : 'video-player'});
+        var title = $("<div>", {id : 'title'});
+        $(player).attr("width", 1200);
+        $(player).attr("height", 500);
+        $(player).attr("margin-left", 25);
+        $(player).attr("margin-right", 25);
+        $(player).attr("text-align", "center");
+        $(title).append("<p style='display:inline-block;'>" + "player placeholder" + "</p>"); //player
+        $(title).append("<br>");
+        $(title).append("<p style='display:inline-block;'>" + "event placeholder" + "</p>"); //event_
+        $(player).html(code);
+        $(player).append(title);
+        $(player).append("<br>");
+        $("#video").append(player);
+
+    </script>
+</div>
+{% endblock %}

@@ -109,6 +109,37 @@ def before_request():
         code = 301
         return redirect(url, code=code)
 
+
+# TODO move to database.py
+def getCategories():
+    try:
+        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM RatingCategories')
+        categories = cur.fetchall()
+        cur.close()
+        conn.close()
+        print('Successfully retrieved rating categories')
+        return categories
+    except:
+        print('Failed to retrieve rating categories')
+        return None
+
+# TODO move to database.py
+def getCode(vid):
+    try:
+        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
+        cur = conn.cursor()
+        cur.execute('SELECT Code FROM Videos WHERE Id = %s', vid)
+        code = cur.fetchall()
+        cur.close()
+        conn.close()
+        print('Successfully retrieved video', vid, 'code')
+        return code
+    except:
+        print('Failed to retrieve video', vid, 'code')
+        return None
+
 # loads home
 @app.route('/')
 @app.route('/home')
@@ -116,19 +147,10 @@ def before_request():
 def index():
     fetch.fetchHomePage()
     try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM RatingCategories')
-        categories = cur.fetchall()
-        print(type(categories))
-        print(json.dumps(categories))
-        cur.close()
-        conn.close()
-        return render_template('history.html', categories=json.dumps(categories))
+        return render_template('history.html', categories=json.dumps(getCategories()))
     except:
-        print('Failed to retrieve rating categories')
         return render_template('history.html')
-    
+
 # TODO make secure
 @app.route('/search&<userId>')
 def search(userId):
@@ -195,6 +217,11 @@ def page_not_found(error):
 @app.route('/testAPI')
 def testAPI():
     return jsonify("OH")
+
+
+@app.route('/videos/<videoId>')
+def videos(videoId):
+    return render_template('video.html', videoId=videoId, videoTitle="Placeholder", videoCode=getCode(videoId))
 
 # input rating into Ratings table upon user post request
 @app.route('/updateRating/<videoId>&<userId>&<categoryId>&<rating>', methods=['POST'])
