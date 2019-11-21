@@ -140,6 +140,27 @@ def getCode(vid):
         print('Failed to retrieve video', vid, 'code')
         return None
 
+def getVideoUserRatings(vid, uid):
+    try:
+        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s;', (vid, uid))
+        u = cur.fetchall()
+        print(u)
+        ur = []
+        for j in u:
+            # append rating categoryid and rating number
+            print('j:', j)
+            ur.append(str(j[3]))
+            ur.append(str(j[4]))
+        print('Received ratings for video', vid, 'for user', uid, 'successfully.')
+        cur.close()
+        conn.close()
+        return ur
+    except:
+        print('Failed to send ratings for video', vid, 'for user', uid, 'because', sys.exc_info()[1])
+        return []
+
 # loads home
 @app.route('/')
 @app.route('/home')
@@ -175,24 +196,7 @@ def search(userId):
             for d in data:
                 if queryRequirements(text) and (text in d or text.lower() in d or d[4] == clutchKills) and [d[1], d[4], d[2]] not in phraseResults:
                     # get user's past reviews for selected videos
-                    try:
-                        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-                        cur = conn.cursor()
-                        cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s;', (d[0], userId))
-                        u = cur.fetchall()
-                        print(u)
-                        ur = []
-                        for j in u:
-                            # append rating categoryid and rating number
-                            print('j:', j)
-                            ur.append(str(j[3]))
-                            ur.append(str(j[4]))
-                        print('Received ratings for video', d[0], 'for user', userId, 'successfully.')
-                        cur.close()
-                        conn.close()
-                    except:
-                        print('Failed to send ratings for video', d[0], 'for user', userId, 'because', sys.exc_info()[1])
-                        ur = []
+                    ur = getVideoUserRatings(d[0], userId)
                     phraseResults.append([d[0], d[1], d[4], d[2], ur])
         for r in phraseResults:
             if r not in results:
@@ -221,7 +225,7 @@ def testAPI():
 
 @app.route('/videos/<videoId>')
 def videos(videoId):
-    return render_template('video.html', videoId=videoId, videoTitle="Placeholder", videoCode=getCode(videoId))
+    return render_template('video.html', videoId=videoId, videoTitle="Placeholder", videoCode=getCode(videoId), categories=json.dumps(getCategories()))
 
 # input rating into Ratings table upon user post request
 @app.route('/updateRating/<videoId>&<userId>&<categoryId>&<rating>', methods=['POST'])
@@ -238,8 +242,12 @@ def inputRating(videoId, userId, categoryId, rating):
         oldRatingRow = cur.fetchone()
         # if rating exists, remove old rating and insert new
         if oldRatingRow != None: # assumption: a rating exists, the rating average exists too
-            revertedRating = (result[0] * result[1] - oldRatingRow[4]) / (result[0] - 1)
-            newRating = (revertedRating * (result[0] - 1) + rating) / result[0]
+            print("result: ", result[0])
+            if result[0] > 1:
+                revertedRating = (result[0] * result[1] - oldRatingRow[4]) / (result[0] - 1)
+                newRating = (revertedRating * (result[0] - 1) + rating) / result[0]
+            else: # if there's only one rating to begin with
+                newRating = rating
             cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newRating, result[0], videoId, categoryId))
             cur.execute('UPDATE Ratings SET rating=%s WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (rating, videoId, userId, categoryId))
         # if rating doesn't exist, insert into db
