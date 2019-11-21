@@ -245,9 +245,7 @@ def inputRating(videoId, userId, categoryId, rating):
         # if rating doesn't exist, insert into db
         else:
             if result != None:
-                print("here")
                 newTotal = result[0] + 1
-                print("here")
                 newAvg = (newTotal * cur.fetchone()[1] + float(rating)) / (newTotal + 1)
                 cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newAvg, newTotal, videoId, categoryId))
             else:
