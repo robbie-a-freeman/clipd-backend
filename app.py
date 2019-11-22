@@ -248,6 +248,7 @@ def avgRatings(videoId):
     try:
         return jsonify(getAvgVideoRatings(videoId))
     except:
+        print("EXCEPTION")
         return jsonify([])
 
 @app.route('/videos/<videoId>/userRatings&<userId>', methods=['POST'])
