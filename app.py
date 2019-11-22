@@ -130,14 +130,14 @@ def getCode(vid):
     try:
         conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
         cur = conn.cursor()
-        cur.execute('SELECT Code FROM Videos WHERE Id = %s', vid)
+        cur.execute('SELECT Code FROM Videos WHERE Id = %s', (vid,))
         code = cur.fetchall()
         cur.close()
         conn.close()
         print('Successfully retrieved video', vid, 'code')
         return code
     except:
-        print('Failed to retrieve video', vid, 'code')
+        print('Failed to retrieve video', vid, 'code because', sys.exc_info()[1])
         return None
 # TODO move to database.py
 def getVideoUserRatings(vid, uid):
