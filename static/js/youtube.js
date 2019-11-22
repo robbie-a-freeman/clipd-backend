@@ -1,3 +1,7 @@
+function getWidthToHeightRatio() {
+  return 560./315.
+}
+
 function changeWidth(code, w) { // assuming that the code is common YT embed code
   return code.replace(/width=\"560\"/g, 'width=\"' + w + '\"');
 }
@@ -16,7 +20,7 @@ function scaleVideo(code) { // assuming that the code is common YT embed code
   w = calcFrontpageVideoWidth(marginW);
   console.log("w: " + w);
   //ratio = startingHeight / startingWidth;
-  h = calcFrontpageVideoHeight(w);
+  h = calcVideoHeight(w);
   console.log("h: " + h);
   return changeHeight(changeWidth(code, w), h);
 }
@@ -35,8 +39,8 @@ function calcFrontpageVideoHeight(width, defaultW = 560, defaultH = 315) {
 function calcFrontpageVideoWidth(marginW) {
   return window.innerWidth - 300 - 2 * marginW ; // 5 margins, 4 video elements
 }
-function calcFrontpageVideoHeight(width) {
-  return 800;
+function calcVideoHeight(width) {
+  return 1 / (getWidthToHeightRatio() / width);
 }
 
 function getVidFromEmbedLink(code) {

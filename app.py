@@ -139,7 +139,7 @@ def getCode(vid):
     except:
         print('Failed to retrieve video', vid, 'code')
         return None
-
+# TODO move to database.py
 def getVideoUserRatings(vid, uid):
     try:
         conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
@@ -153,12 +153,33 @@ def getVideoUserRatings(vid, uid):
             print('j:', j)
             ur.append(str(j[3]))
             ur.append(str(j[4]))
-        print('Received ratings for video', vid, 'for user', uid, 'successfully.')
+        print('Fetched ratings for video', vid, 'for user', uid, 'successfully.')
         cur.close()
         conn.close()
         return ur
     except:
-        print('Failed to send ratings for video', vid, 'for user', uid, 'because', sys.exc_info()[1])
+        print('Failed to fetch ratings for video', vid, 'for user', uid, 'because', sys.exc_info()[1])
+        return []
+# TODO move to database.py
+def getAvgVideoRatings(vid):
+    try:
+        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
+        cur = conn.cursor()
+        cur.execute('SELECT * FROM RatingAvgs WHERE VideoId=%s;', (vid,))
+        r = cur.fetchall()
+        print(r)
+        ar = []
+        for j in r:
+            # append rating categoryid and rating number
+            print('j:', j)
+            ar.append(str(j[2]))
+            ar.append(str(j[4]))
+        print('Received average ratings for video', vid, 'successfully.')
+        cur.close()
+        conn.close()
+        return ar
+    except:
+        print('Failed to receive average ratings for video', vid, 'because', sys.exc_info()[1])
         return []
 
 # loads home
@@ -222,6 +243,19 @@ def page_not_found(error):
 def testAPI():
     return jsonify("OH")
 
+@app.route('/videos/<videoId>/avgRatings', methods=['POST'])
+def avgRatings(videoId):
+    try:
+        return jsonify(getAvgVideoRatings(videoId))
+    except:
+        return jsonify([])
+
+@app.route('/videos/<videoId>/userRatings&<userId>', methods=['POST'])
+def userRatings(videoId, userId):
+    try:
+        return jsonify(getVideoUserRatings(videoId, userId))
+    except:
+        return jsonify([])
 
 @app.route('/videos/<videoId>')
 def videos(videoId):
@@ -240,6 +274,7 @@ def inputRating(videoId, userId, categoryId, rating):
         result = cur.fetchone()
         cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (videoId, userId, categoryId))
         oldRatingRow = cur.fetchone()
+        print("oldRatingRow:", oldRatingRow)
         # if rating exists, remove old rating and insert new
         if oldRatingRow != None: # assumption: a rating exists, the rating average exists too
             print("result: ", result[0])
@@ -254,7 +289,7 @@ def inputRating(videoId, userId, categoryId, rating):
         else:
             if result != None:
                 newTotal = result[0] + 1
-                newAvg = (newTotal * cur.fetchone()[1] + float(rating)) / (newTotal + 1)
+                newAvg = (newTotal * result[1] + float(rating)) / (newTotal + 1)
                 cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newAvg, newTotal, videoId, categoryId))
             else:
                 cur.execute('INSERT INTO RatingAvgs VALUES(DEFAULT, %s, %s, %s, %s);', (videoId, categoryId, 1, rating))

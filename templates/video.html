@@ -21,11 +21,76 @@
 {% block content %}
 <meta id="rating-categories" categories="{{ categories }}">
 <meta id="video-code" code="{{ videoCode }}">
+<meta id="video-id" vid="{{ videoId }}">
+<meta id="user-video-ratings" code="">
+<meta id="avg-video-ratings" code="">
+
+<script>
+  var uid = $("#user-id").data()["name"];
+  if (uid == "") {
+    uid = 0;
+  }
+  var ratingInfo = []
+  var url = "/videos/" + $("#video-id").attr("vid") + "/userRatings&" + uid;
+    $.ajax({
+      url: url,
+      type: "post",
+      success: function(response) {
+        ratingInfo = response;
+        // update ratings of any existing ratings
+        var categories = $("#rating-categories").attr('categories');
+        categories = categories.substring(1, categories.length - 1);
+        categories = categories.replace(/["']/g, "");
+        categories = categories.split("],");
+        var categoryIds = []
+        var categoryNames = []
+        for (var i = 0; i < categories.length; i++) {
+          var categoryTuple = categories[i].replace(/\[/g, '').replace(/]/g, '')
+          var id = categoryTuple.split(",")[0].trim();
+          categoryIds.push(id);
+          var name = categoryTuple.split(",")[1].trim();
+          categoryNames.push(name);
+        }
+        for (var j = 0; j < categoryIds.length; j++) {
+          // find a rating for the given categoryId, or give 0
+          // TODO
+          var updatedRating = 0.0
+          console.log(ratingInfo.length);
+          for (var k = 0; k < ratingInfo.length; k+=2) {
+            console.log(ratingInfo[k]);
+            if (ratingInfo[k] == categoryIds[j]) {
+              updatedRating = ratingInfo[k+1];
+              break;
+            }
+          }
+          var ratingButton = $("#stars" + j);
+          $(ratingButton).attr("style", "--rating:" + updatedRating + ";");
+        }
+        console.log(response);
+      },
+      error: function(xhr) {
+        console.log(xhr);
+      }
+    });
+    var url = "/videos/" + $("#video-id").attr("vid") + "/avgRatings";
+    $.ajax({
+      url: url,
+      type: "post",
+      success: function(response) {
+        console.log(response);
+      },
+      error: function(xhr) {
+        console.log(xhr);
+      }
+    });
+</script>
 
 <script src="../static/js/youtube.js"></script>
 <div id="video" class="content container text-center">
     <script>
         var code = $("#video-code").attr("code");
+        code = code.replace('[(\'', '');
+        code = code.replace('\',)]', '');
         code = scaleVideo(code);
         var player = $("<div>", {id : 'video-player'});
         var title = $("<div>", {id : 'title'});
@@ -35,13 +100,85 @@
         $(player).attr("margin-right", 25);
         $(player).attr("text-align", "center");
         $(title).append("<p style='display:inline-block;'>" + "player placeholder" + "</p>"); //player
-        $(title).append("<br>");
         $(title).append("<p style='display:inline-block;'>" + "event placeholder" + "</p>"); //event_
         $(player).html(code);
         $(player).append(title);
         $(player).append("<br>");
         $("#video").append(player);
+    </script>
+    <script>
+      var categories = $("#rating-categories").attr('categories');
+      categories = categories.substring(1, categories.length - 1);
+      categories = categories.replace(/["']/g, "");
+      categories = categories.split("],");
+      var categoryIds = []
+      var categoryNames = []
+      for (var i = 0; i < categories.length; i++) {
+        var categoryTuple = categories[i].replace(/\[/g, '').replace(/]/g, '')
+        var id = categoryTuple.split(",")[0].trim();
+        categoryIds.push(id);
+        var name = categoryTuple.split(",")[1].trim();
+        categoryNames.push(name);
+      }
+      var uid = $("#user-id").data()["name"];
+      if (uid == "") {
+        uid = 0;
+      }
+      // append rating buttons to each entry
+      for (var j = 0; j < categoryIds.length; j++) {
 
+        // find a rating for the given categoryId, or give 0
+        // TODO
+        var categoryRating = 0.0
+        console.log(ratingInfo.length);
+        for (var k = 0; k < ratingInfo.length; k+=2) {
+          console.log(ratingInfo[k]);
+          if (ratingInfo[k] == categoryIds[j]) {
+            categoryRating = ratingInfo[k+1];
+            break;
+          }
+        }
+        console.log('after');
+
+        var categoryId = categoryIds[j];
+        var ratingsContainer = $("<div>");
+        var ratingsLabel = $("<p>");
+        $(ratingsLabel).html(categoryNames[j]);
+        $(ratingsContainer).attr("class", "starContainer");
+        var ratingButton = $("<div>", {id: "stars" + j});
+        $(ratingButton).attr("class", "Stars");
+        $(ratingButton).attr("value", 5.0);
+        $(ratingButton).attr("videoId", $("#video-id").attr("vid"));
+        $(ratingButton).attr("catId", categoryId);
+        $(ratingButton).attr("style", "--rating:" + categoryRating + ";");
+        $(ratingButton).attr("aria-label", "Rating of this product is 2.3 out of 5.");
+        // add button listener
+        $(ratingButton).on("click", function(e) {
+          // frontend
+          leftOffset = $(this).offset().left;
+          var xPosition = e.clientX - leftOffset;
+          var maxXPosition = $(this).width();
+          var rating = xPosition / maxXPosition * 5.0;
+          $(this).attr('style', "--rating: " + rating + ";");
+          // backend
+          console.log("sending rating")
+          var url = "/updateRating/" + $(this).attr("videoId") + "&" + uid + "&" + $(this).attr("catId") + "&" + rating;
+          $.ajax({
+            url: url,
+            type: "post",
+            data: {jsdata: rating},
+            success: function(response) {
+              console.log(response);
+            },
+            error: function(xhr) {
+              console.log(xhr);
+            }
+          });
+        });
+        $(ratingsContainer).append(ratingsLabel)
+        $(ratingsContainer).append(ratingButton);
+        $("#video").append(ratingsContainer);
+        }
     </script>
 </div>
 {% endblock %}
