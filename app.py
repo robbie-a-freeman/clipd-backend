@@ -20,10 +20,6 @@ sys.path.insert(0, 'static/py')
 
 import fetch
 
-#from flaskext.mysql import MySQL
-
-from bs4 import BeautifulSoup
-
 app = Flask(__name__)
 
 __author__ = "Robbie Freeman"
@@ -248,7 +244,7 @@ def avgRatings(videoId):
     try:
         return jsonify(getAvgVideoRatings(videoId))
     except:
-        print("EXCEPTION")
+        print("EXCEPTION: Could not retrive average ratings for", videoId)
         return jsonify([])
 
 @app.route('/videos/<videoId>/userRatings&<userId>', methods=['POST'])
@@ -256,6 +252,7 @@ def userRatings(videoId, userId):
     try:
         return jsonify(getVideoUserRatings(videoId, userId))
     except:
+        print("EXCEPTION: Could not retrive user ratings for video", videoId, "and user", userId)
         return jsonify([])
 
 @app.route('/videos/<videoId>')
@@ -352,10 +349,6 @@ def logout():
 '''@app.route("/signup")
 def testreact():
     return render_template('test-react.html') '''
-'''
-@app.route('/highlight/<videoId>')
-def load_highlight():
-    return render_template('highlight.html')'''
 
 '''# loads About page
 @app.route('/about')
