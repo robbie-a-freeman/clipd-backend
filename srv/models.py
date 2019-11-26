@@ -1,3 +1,18 @@
+#from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Array
+
+'''class Videos(Base):
+    __tablename__ = 'users'
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), unique=True)
+    email = Column(String(120), unique=True)
+
+    def __init__(self, name=None, email=None):
+        self.name = name
+        self.email = email
+
+    def __repr__(self):
+        return '<User %r>' % (self.name)'''
+
 class User:
     username = None
     password = None
@@ -56,3 +71,70 @@ class User:
     # it to unicode.
     def get_id(self):
         return self.id
+'''
+# Weapon enum, store different weapons
+import enum
+class Weapon(enum.Enum):
+    cz = 'cz'
+    desertEagle = 'desert_eagle'
+    dualBerettas = 'dual_berettas'
+    fiveSeven = 'five_seven'
+    glock = 'glock'
+    p2000 = 'p2000'
+    p250 = 'p250'
+    r8 = 'r8'
+    tec9 = 'tec9'
+    usp = 'usp'
+    mag7 = 'mag7'
+    nova = 'nova'
+    sawedOff = 'sawed_off'
+    xm = 'xm'
+    mac10 = 'mac10'
+    mp5 = 'mp5'
+    mp7 = 'mp7'
+    mp9 = 'mp9'
+    p90 = 'p90'
+    pp_bizon = 'pp_bizon'
+    ump = 'ump'
+    ak = 'ak'
+    aug = 'aug'
+    famas = 'famas'
+    galil = 'galil'
+    m4a1s = 'm4a1s'
+    m4a4 = 'm4a4'
+    sg = 'sg'
+    awp = 'awp'
+    g3sg1 = 'g3sg1'
+    scar = 'scar'
+    ssg = 'ssg'
+    m249 = 'm249'
+    negev = 'negev'
+    knife = 'knife'
+    zeus = 'zeus'
+    he = 'he'
+    fire = 'fire'
+    flash = 'flash'
+    smoke = 'smoke'
+
+
+class Video:
+    id = Column(Integer, primary_key=True)
+    code = Column(String(512))
+    event = Column(String(64))
+    map = Column(String(32))
+    player = Column(String(32))
+    team = Column(String(64), nullable=True)
+    grandFinal = Column(Boolean)
+    armor = Column(Boolean)
+    crowd = Column(Boolean)
+    kills = Column(Integer)
+    clutchkills = Column(Integer)
+    weapon = Column(ARRAY(Enum(Weapon)))
+
+    def __init__(self, name=None, email=None):
+        self.name = name
+        self.email = email
+
+    def __repr__(self):
+        return '<User %r>' % (self.name)    
+'''

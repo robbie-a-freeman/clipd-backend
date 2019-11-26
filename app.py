@@ -16,9 +16,6 @@ from flask import flash
 
 import os
 import sys
-sys.path.insert(0, 'static/py')
-
-import fetch
 
 app = Flask(__name__)
 
@@ -32,8 +29,6 @@ __status__ = "Development"
 if __name__ == "__main__":
     app.run()
 
-import psycopg2
-
 # Environmental variables
 DATABASE_URL = os.environ['DATABASE_URL']
 try:
@@ -41,16 +36,34 @@ try:
 except KeyError:
     SSL_MODE='require' # default is requiring ssl
 
+'''# set up SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
+POSTGRES_URL = str('postgresql://localhost:5432')
+POSTGRES_USER = str('postgres')
+POSTGRES_PW = str('rorodog')
+POSTGRES_DB = str('csgo_highlights')
+TEST_DB_URL = str('postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_USER,pw=POSTGRES_PW,url=POSTGRES_URL,db=POSTGRES_DB))
+app.config['SQLALCHEMY_DATABASE_URI'] = TEST_DB_URL
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprecation warning
+db = SQLAlchemy(app)
+from sqlalchemy_utils import database_exists, create_database, drop_database
+if database_exists(TEST_DB_URL):
+    print('Deleting database.')
+    drop_database(TEST_DB_URL)
+if not database_exists(TEST_DB_URL):
+    print('Creating database.')
+    create_database(TEST_DB_URL)
+db.create_all()
+print('db should be up') '''
+
+sys.path.insert(0, 'srv')
+from database import DB
 try:
-    conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM videos")
-    data = cur.fetchall()
-    cur.close()
-    conn.close()
+    db = DB(DATABASE_URL, SSL_MODE)
+    data = db.getAllVideos()
     print("connected to postgres!")
 except:
-    print("not connected to postgres!")
+    print("not connected to postgres! error:", sys.exc_info()[1])
 
 # setting up secret key
 # TODO make this environment var
@@ -72,29 +85,10 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Submit')
 
 # setting up Flask-Login user object
-sys.path.insert(0, 'srv')
-from User import User
-def getUserById(id):
-    try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM Users WHERE Id = %s;', (id, ))
-        data = cur.fetchone()
-        cur.close()
-        conn.close()
-        if data:
-            print("Successfully retrieved user")
-            return User(data[0], data[1], data[3], DATABASE_URL, SSL_MODE) # user, pass
-        else:
-            print("Failed to retrieve user: no user")
-            return None
-    except:
-        print("Failed to retrieve user: no connection")
-        return None
+from models import User
 @login_manager.user_loader
 def load_user(user_id):
-    return getUserById(user_id)
-
+    return db.getUserById(user_id)
 
 # make sure that each request is redirected to https
 # TODO fix potential security vulnerability
@@ -105,87 +99,13 @@ def before_request():
         code = 301
         return redirect(url, code=code)
 
-
-# TODO move to database.py
-def getCategories():
-    try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM RatingCategories')
-        categories = cur.fetchall()
-        cur.close()
-        conn.close()
-        print('Successfully retrieved rating categories')
-        return categories
-    except:
-        print('Failed to retrieve rating categories')
-        return None
-
-# TODO move to database.py
-def getCode(vid):
-    try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-        cur = conn.cursor()
-        cur.execute('SELECT Code FROM Videos WHERE Id = %s', (vid,))
-        code = cur.fetchall()
-        cur.close()
-        conn.close()
-        print('Successfully retrieved video', vid, 'code')
-        return code
-    except:
-        print('Failed to retrieve video', vid, 'code because', sys.exc_info()[1])
-        return None
-# TODO move to database.py
-def getVideoUserRatings(vid, uid):
-    try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s;', (vid, uid))
-        u = cur.fetchall()
-        print(u)
-        ur = []
-        for j in u:
-            # append rating categoryid and rating number
-            print('j:', j)
-            ur.append(str(j[3]))
-            ur.append(str(j[4]))
-        print('Fetched ratings for video', vid, 'for user', uid, 'successfully.')
-        cur.close()
-        conn.close()
-        return ur
-    except:
-        print('Failed to fetch ratings for video', vid, 'for user', uid, 'because', sys.exc_info()[1])
-        return []
-# TODO move to database.py
-def getAvgVideoRatings(vid):
-    try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM RatingAvgs WHERE VideoId=%s;', (vid,))
-        r = cur.fetchall()
-        print(r)
-        ar = []
-        for j in r:
-            # append rating categoryid and rating number
-            print('j:', j)
-            ar.append(str(j[2]))
-            ar.append(str(j[4]))
-        print('Received average ratings for video', vid, 'successfully.')
-        cur.close()
-        conn.close()
-        return ar
-    except:
-        print('Failed to receive average ratings for video', vid, 'because', sys.exc_info()[1])
-        return []
-
 # loads home
 @app.route('/')
 @app.route('/home')
 @app.route('/index')
 def index():
-    fetch.fetchHomePage()
     try:
-        return render_template('history.html', categories=json.dumps(getCategories()))
+        return render_template('history.html', categories=json.dumps(db.getCategories()))
     except:
         return render_template('history.html')
 
@@ -213,7 +133,7 @@ def search(userId):
             for d in data:
                 if queryRequirements(text) and (text in d or text.lower() in d or d[4] == clutchKills) and [d[1], d[4], d[2]] not in phraseResults:
                     # get user's past reviews for selected videos
-                    ur = getVideoUserRatings(d[0], userId)
+                    ur = db.getVideoUserRatings(d[0], userId)
                     phraseResults.append([d[0], d[1], d[4], d[2], ur])
         for r in phraseResults:
             if r not in results:
@@ -242,7 +162,7 @@ def testAPI():
 @app.route('/videos/<videoId>/avgRatings', methods=['POST'])
 def avgRatings(videoId):
     try:
-        return jsonify(getAvgVideoRatings(videoId))
+        return jsonify(db.getAvgVideoRatings(videoId))
     except:
         print("EXCEPTION: Could not retrive average ratings for", videoId)
         return jsonify([])
@@ -250,56 +170,21 @@ def avgRatings(videoId):
 @app.route('/videos/<videoId>/userRatings&<userId>', methods=['POST'])
 def userRatings(videoId, userId):
     try:
-        return jsonify(getVideoUserRatings(videoId, userId))
+        return jsonify(db.getVideoUserRatings(videoId, userId))
     except:
         print("EXCEPTION: Could not retrive user ratings for video", videoId, "and user", userId)
         return jsonify([])
 
 @app.route('/videos/<videoId>')
 def videos(videoId):
-    return render_template('video.html', videoId=videoId, videoTitle="Placeholder", videoCode=getCode(videoId), categories=json.dumps(getCategories()))
+    return render_template('video.html', videoId=videoId, videoTitle="Placeholder", videoCode=db.getCode(videoId), categories=json.dumps(db.getCategories()))
 
 # input rating into Ratings table upon user post request
 @app.route('/updateRating/<videoId>&<userId>&<categoryId>&<rating>', methods=['POST'])
 def inputRating(videoId, userId, categoryId, rating):
     # connect to db and send command
     print('input received')
-    rating = float(rating)
-    try:
-        conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-        cur = conn.cursor()
-        cur.execute('SELECT Total, Average FROM RatingAvgs WHERE VideoId=%s AND RatingCategoryId=%s;', (videoId, categoryId))
-        result = cur.fetchone()
-        cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (videoId, userId, categoryId))
-        oldRatingRow = cur.fetchone()
-        print("oldRatingRow:", oldRatingRow)
-        # if rating exists, remove old rating and insert new
-        if oldRatingRow != None: # assumption: a rating exists, the rating average exists too
-            print("result: ", result[0])
-            if result[0] > 1:
-                revertedRating = (result[0] * result[1] - oldRatingRow[4]) / (result[0] - 1)
-                newRating = (revertedRating * (result[0] - 1) + rating) / result[0]
-            else: # if there's only one rating to begin with
-                newRating = rating
-            cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newRating, result[0], videoId, categoryId))
-            cur.execute('UPDATE Ratings SET rating=%s WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (rating, videoId, userId, categoryId))
-        # if rating doesn't exist, insert into db
-        else:
-            if result != None:
-                newTotal = result[0] + 1
-                newAvg = (newTotal * result[1] + float(rating)) / (newTotal + 1)
-                cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newAvg, newTotal, videoId, categoryId))
-            else:
-                cur.execute('INSERT INTO RatingAvgs VALUES(DEFAULT, %s, %s, %s, %s);', (videoId, categoryId, 1, rating))
-            cur.execute('INSERT INTO Ratings VALUES(DEFAULT, %s, %s, %s, %s, DEFAULT);', (videoId, userId, categoryId, rating))
-        conn.commit()
-        print('Sent rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId, 'successfully.')
-        cur.close()
-        conn.close()
-        return "test success"
-    except:
-        print('Failed to send rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId, 'because', sys.exc_info()[0:2])
-        return "test failed"
+    return db.updateRating(videoId, userId, categoryId, rating)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -311,31 +196,7 @@ def login():
         # Login and validate the user.
         # user should be an instance of your `User` class
         # authenticate(User)
-        # TODO hash password from client to server
-        try:
-            conn = psycopg2.connect(DATABASE_URL, sslmode=SSL_MODE)
-            cur = conn.cursor()
-            cur.execute('SELECT password FROM Users WHERE Name = %s AND Password = crypt(%s, Password);', (request.form['username'], request.form['password']))
-            encryptedPassword = cur.fetchall()[0][0]
-            cur.execute('SELECT Id FROM Users WHERE Name = %s AND Password = %s;', (request.form['username'], encryptedPassword))
-            id = cur.fetchall()[0][0]
-            if id:
-                # bool returns True for any string, False for blank/None
-                user = User(id, request.form['username'], encryptedPassword, DATABASE_URL, SSL_MODE)
-                print("user inited")
-                login_user(user, remember = bool(request.form.get('remember_me')))
-                flash('Logged in successfully.')
-                assert(user.is_authenticated)
-                print("user authenticated")
-            else:
-                flash('Login failed.')
-                print("authentication failed: invalid credentials")
-                raise
-            cur.close()
-            conn.close()
-        except:
-            print("authentication failed: no connection to database - ", sys.exc_info()[0])
-            flash('Login failed.')
+        db.loginUser(request.form['username'], request.form['password'], request.form.get('remember_me'))
         return redirect(url_for('index'))
     return render_template('login.html', form=form)
 
