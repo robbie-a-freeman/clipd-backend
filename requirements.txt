@@ -1,10 +1,10 @@
-Flask
-gunicorn
-bs4
-psycopg2
-python-dotenv
+Flask==1.0.2
+gunicorn==19.9.0
+psycopg2==2.8.4
+python-dotenv==0.10.3
 pyjwt==1.7.1
 flask_cors==3.0.7
 Flask-Login==0.4.1
 flask_wtf==0.14.2
 wtforms==2.2.1
+flask-sqlalchemy==2.3.2
