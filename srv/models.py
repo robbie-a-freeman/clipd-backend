@@ -14,6 +14,7 @@
         return '<User %r>' % (self.name)'''
 
 class User:
+    id = 0
     username = None
     password = None
     DATABASE_URL = ''

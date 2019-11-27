@@ -99,6 +99,10 @@ def before_request():
         code = 301
         return redirect(url, code=code)
 
+# trying to run algolia
+import algolia
+algolia.initializeClipsIndex(db)
+
 # loads home
 @app.route('/')
 @app.route('/home')
@@ -109,46 +113,15 @@ def index():
     except:
         return render_template('history.html')
 
-# TODO make secure
 @app.route('/search&<userId>')
 def search(userId):
     print("in search")
     text = request.args.get('jsdata')
-    results = []
-    # each comma separated group represents and AND clause
-    for p in text.split(','):
-        queryTerms = p.split(" ") # use later to search for specific terms like map
-        phraseResults = []
-        if text:
-            # Assumption: there better only by one instance of 1vX. if not takes the first one
-            clutchKills = -1 # -1 means no requirement
-            i = text.find("1v")
-            if i > -1 and len(text) - i > 2:
-                clutchKills = int(text[i + 2])
-                if clutchKills and 0 <= clutchKills and 5 >= clutchKills: # if there's a number after v
-                    clutchKills = int(text[i + 2])
-                else:
-                    clutchKills = -1
-
-            for d in data:
-                if queryRequirements(text) and (text in d or text.lower() in d or d[4] == clutchKills) and [d[1], d[4], d[2]] not in phraseResults:
-                    # get user's past reviews for selected videos
-                    ur = db.getVideoUserRatings(d[0], userId)
-                    phraseResults.append([d[0], d[1], d[4], d[2], ur])
-        for r in phraseResults:
-            if r not in results:
-                results.append(r)
-
-
+    #results = algolia.oldSearchForVideos(text, data, db, userId)
+    results = algolia.clipSearch(text)
     print("out search")
     print(results)
     return jsonify(results)
-
-# this is a bad function TODO fix
-def queryRequirements(q):
-    if q == 'true' or q == 'false':
-        return False
-    return True
 
 # basic 404 page. Hopefully isn't called all that often TODO: implement
 @app.errorhandler(404)

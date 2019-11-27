@@ -1,6 +1,7 @@
 import psycopg2
 import sys
 
+# instance that contains the necessary info for a database reference
 class DB:
     URL = 'error'
     SSL = 'require'
@@ -146,7 +147,9 @@ class DB:
             print('Failed to send rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId, 'because', sys.exc_info()[0:2])
             return "test failed"
     
+    # authenticates a user and starts a session
     def loginUser(self, username, password, remember):
+        from flask import flash
         try:
             conn = psycopg2.connect(self.URL, sslmode=self.SSL)
             cur = conn.cursor()
@@ -156,8 +159,11 @@ class DB:
             id = cur.fetchall()[0][0]
             if id:
                 # bool returns True for any string, False for blank/None
-                user = User(id, username, encryptedPassword, DATABASE_URL, SSL_MODE)
+                sys.path.insert(0, 'srv')
+                from models import User
+                user = User(id, username, encryptedPassword, self.URL, self.SSL)
                 print("user inited")
+                from flask_login import login_user
                 login_user(user, remember = bool(remember))
                 flash('Logged in successfully.')
                 assert(user.is_authenticated)
@@ -169,5 +175,5 @@ class DB:
             cur.close()
             conn.close()
         except:
-            print("authentication failed: no connection to database - ", sys.exc_info()[0])
+            print("authentication failed: no connection to database - ", sys.exc_info()[1])
             flash('Login failed.')

@@ -86,19 +86,18 @@
             var r = response;
             console.log(r);
             $("#results").html("");
-            if (r !== undefined && r.length) {
+            if (r !== undefined && r.hits.length) {
               var videoWidthMargin = calcFrontpageVideoMarginW();
               var videoWidth = calcFrontpageVideoWidth(videoWidthMargin);
               var videoHeight = calcVideoHeight(videoWidth);
               var code, player, event_, ratingButton, v;
-              for (var i = 0; i < r.length; i++) {
-                v = r[i];
-                id = v[0];
-                code = v[1];
-                player = v[2];
-                event_ = v[3];
-                ratingInfo = v.slice(4, v.length);
-                console.log(ratingInfo);
+              for (var i = 0; i < r.hits.length; i++) {
+                v = r.hits[i]
+                id = v['objectID'];
+                code = v['Code'];
+                player = v['Player'];
+                event_ = v['Event'];
+                //ratingInfo = v.slice(4, v.length);
 
                 var thumbnail = generateThumbnailUrl(getVidFromEmbedLink(code), true);
 
@@ -131,8 +130,12 @@
                 $($lildiv).append("<br>");
                 
                 // append rating buttons to each entry
+                
                 for (var j = 0; j < categoryIds.length; j++) {
 
+                  // Ratings implementation is obsolete. TODO update for Algolia
+
+                  /*
                   // find a rating for the given categoryId, or give 0
                   var categoryRating = 0.0
                   for (var k = 0; k < ratingInfo[0].length; k+=2) {
@@ -141,7 +144,7 @@
                       break;
                     }
                   }
-
+                  
                   var categoryId = categoryIds[j];
                   var ratingsContainer = $("<div>");
                   var ratingsLabel = $("<p>");
@@ -153,7 +156,7 @@
                   $(ratingButton).attr("videoId", id);
                   $(ratingButton).attr("catId", categoryId);
                   $(ratingButton).attr("style", "--rating:" + categoryRating + ";");
-                  $(ratingButton).attr("aria-label", "Rating of this product is 2.3 out of 5.");
+                  $(ratingButton).attr("aria-label", "Rating of this product is " + categoryRating +" out of 5.");
                   // add button listener
                   $(ratingButton).on("click", function(e) {
                     // frontend
@@ -179,12 +182,11 @@
                   });
                   $(ratingsContainer).append(ratingsLabel)
                   $(ratingsContainer).append(ratingButton);
-                  $($lildiv).append(ratingsContainer);
+                  $($lildiv).append(ratingsContainer); */
                 }
 
                 $($div).append($lildiv);
                 $(results).append($div);
-                console.log("exec");
               }
               
             }
