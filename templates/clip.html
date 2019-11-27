@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ videoTitle }}{% endblock %}
+{% block title %}{{ clipTitle }}{% endblock %}
 
 {% block style %}
 <style>
@@ -20,19 +20,19 @@
 
 {% block content %}
 <meta id="rating-categories" categories="{{ categories }}">
-<meta id="video-code" code="{{ videoCode }}">
-<meta id="video-id" vid="{{ videoId }}">
-<meta id="user-video-ratings" code="">
-<meta id="avg-video-ratings" code="">
+<meta id="clip-code" code="{{ clipCode }}">
+<meta id="clip-id" cid="{{ clipId }}">
+<meta id="user-clip-ratings" code="">
+<meta id="avg-clip-ratings" code="">
 
 <script src="../static/js/youtube.js"></script>
-<div id="video" class="content container text-center">
+<div id="clip" class="content container text-center">
     <script>
-        var code = $("#video-code").attr("code");
+        var code = $("#clip-code").attr("code");
         code = code.replace('[(\'', '');
         code = code.replace('\',)]', '');
-        code = scaleVideo(code);
-        var player = $("<div>", {id : 'video-player'});
+        code = scaleClip(code);
+        var player = $("<div>", {id : 'clip-player'});
         var title = $("<div>", {id : 'title'});
         $(player).attr("width", 1200);
         $(player).attr("height", 500);
@@ -44,7 +44,7 @@
         $(player).html(code);
         $(player).append(title);
         $(player).append("<br>");
-        $("#video").append(player);
+        $("#clip").append(player);
     </script>
     <script>
       var categories = $("#rating-categories").attr('categories');
@@ -78,7 +78,7 @@
           var ratingButton = $("<div>", {id: "stars" + categoryId});
           $(ratingButton).attr("class", "Stars");
           $(ratingButton).attr("value", 5.0);
-          $(ratingButton).attr("videoId", $("#video-id").attr("vid"));
+          $(ratingButton).attr("clipId", $("#clip-id").attr("cid"));
           $(ratingButton).attr("catId", categoryId);
           $(ratingButton).attr("style", "--rating:" + DEFAULT_CATEGORY_RATING + ";");
           $(ratingButton).attr("aria-label", "Rating of this product is 2.3 out of 5.");
@@ -92,7 +92,7 @@
             $(this).attr('style', "--rating: " + rating + ";");
             // backend
             console.log("sending rating")
-            var url = "/updateRating/" + $(this).attr("videoId") + "&" + uid + "&" + $(this).attr("catId") + "&" + rating;
+            var url = "/updateRating/" + $(this).attr("clipId") + "&" + uid + "&" + $(this).attr("catId") + "&" + rating;
             $.ajax({
               url: url,
               type: "post",
@@ -110,7 +110,7 @@
           $(userRatingsContainer).append(ratingButton);
           $(ratingsContainer).append(userRatingsContainer);
         }
-        $("#video").append(ratingsContainer);
+        $("#clip").append(ratingsContainer);
 
         // append average ratings container
         var avgRatingsContainer = $("<div>");
@@ -123,7 +123,7 @@
           var ratingButton = $("<div>", {id: "avg-stars" + categoryId});
           $(ratingButton).attr("class", "Stars");
           $(ratingButton).attr("value", 5.0);
-          $(ratingButton).attr("videoId", $("#video-id").attr("vid"));
+          $(ratingButton).attr("clipId", $("#clip-id").attr("cid"));
           $(ratingButton).attr("catId", categoryId);
           $(ratingButton).attr("style", "--rating:" + DEFAULT_CATEGORY_RATING + ";");
           $(ratingButton).attr("aria-label", "Rating of this product is 2.3 out of 5.");
@@ -132,7 +132,7 @@
           $(avgRatingsContainer).append(ratingButton);
           $(ratingsContainer).append(avgRatingsContainer);
         }
-        $("#video").append(ratingsContainer);
+        $("#clip").append(ratingsContainer);
     </script>
     <script>
       var uid = $("#user-id").data()["name"];
@@ -140,7 +140,7 @@
         uid = 0;
       }
       var ratingInfo = []
-      var url = "/videos/" + $("#video-id").attr("vid") + "/userRatings&" + uid;
+      var url = "/clips/" + $("#clip-id").attr("cid") + "/userRatings&" + uid;
         $.ajax({
           url: url,
           type: "post",
@@ -177,7 +177,7 @@
             console.log(xhr);
           }
         });
-        var url = "/videos/" + $("#video-id").attr("vid") + "/avgRatings";
+        var url = "/clips/" + $("#clip-id").attr("cid") + "/avgRatings";
         $.ajax({
           url: url,
           type: "post",

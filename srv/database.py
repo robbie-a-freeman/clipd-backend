@@ -10,11 +10,11 @@ class DB:
         self.URL = db_url
         self.SSL = ssl
     
-    # get all videos in the db
-    def getAllVideos(self):
+    # get all clips in the db
+    def getAllClips(self):
         conn = psycopg2.connect(self.URL, sslmode=self.SSL)
         cur = conn.cursor()
-        cur.execute("SELECT * FROM videos")
+        cur.execute("SELECT * FROM clips")
         data = cur.fetchall()
         cur.close()
         conn.close()
@@ -55,68 +55,68 @@ class DB:
             print('Failed to retrieve rating categories')
             return None
 
-    # get the code of a given video id
-    def getCode(self, vid):
+    # get the code of a given clip id
+    def getCode(self, cid):
         try:
             conn = psycopg2.connect(self.URL, sslmode=self.SSL)
             cur = conn.cursor()
-            cur.execute('SELECT Code FROM Videos WHERE Id = %s', (vid,))
+            cur.execute('SELECT Code FROM Clips WHERE Id = %s', (cid,))
             code = cur.fetchall()
             cur.close()
             conn.close()
-            print('Successfully retrieved video', vid, 'code')
+            print('Successfully retrieved clip', cid, 'code')
             return code
         except:
-            print('Failed to retrieve video', vid, 'code because', sys.exc_info()[1])
+            print('Failed to retrieve clip', cid, 'code because', sys.exc_info()[1])
             return None
-    # get the given user's ratings of a given video
-    def getVideoUserRatings(self, vid, uid):
+    # get the given user's ratings of a given clip
+    def getClipUserRatings(self, cid, uid):
         try:
             conn = psycopg2.connect(self.URL, sslmode=self.SSL)
             cur = conn.cursor()
-            cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s;', (vid, uid))
+            cur.execute('SELECT * FROM Ratings WHERE ClipId=%s AND UserId=%s;', (cid, uid))
             u = cur.fetchall()
             ur = []
             for j in u:
                 # append rating categoryid and rating number
                 ur.append(str(j[3])) # TODO improve with Model concept
                 ur.append(str(j[4]))
-            print('Fetched ratings for video', vid, 'for user', uid, 'successfully.')
+            print('Fetched ratings for clip', cid, 'for user', uid, 'successfully.')
             cur.close()
             conn.close()
             return ur
         except:
-            print('Failed to fetch ratings for video', vid, 'for user', uid, 'because', sys.exc_info()[1])
+            print('Failed to fetch ratings for clip', cid, 'for user', uid, 'because', sys.exc_info()[1])
             return []
-    # get the average ratings of a given video
-    def getAvgVideoRatings(self, vid):
+    # get the average ratings of a given clip
+    def getAvgClipRatings(self, cid):
         try:
             conn = psycopg2.connect(self.URL, sslmode=self.SSL)
             cur = conn.cursor()
-            cur.execute('SELECT * FROM RatingAvgs WHERE VideoId=%s;', (vid,))
+            cur.execute('SELECT * FROM RatingAvgs WHERE ClipId=%s;', (cid,))
             r = cur.fetchall()
             ar = []
             for j in r:
                 # append rating categoryid and rating number
                 ar.append(str(j[2])) # TODO improve with Model concept
                 ar.append(str(j[4]))
-            print('Received average ratings for video', vid, 'successfully.')
+            print('Received average ratings for clip', cid, 'successfully.')
             cur.close()
             conn.close()
             return ar
         except:
-            print('Failed to receive average ratings for video', vid, 'because', sys.exc_info()[1])
+            print('Failed to receive average ratings for clip', cid, 'because', sys.exc_info()[1])
             return []
 
     # TODO improve by minimizing time function possesses lock on the db connection
-    def updateRating(self, videoId, userId, categoryId, rating):
+    def updateRating(self, clipId, userId, categoryId, rating):
         rating = float(rating)
         try:
             conn = psycopg2.connect(self.URL, sslmode=self.SSL)
             cur = conn.cursor()
-            cur.execute('SELECT Total, Average FROM RatingAvgs WHERE VideoId=%s AND RatingCategoryId=%s;', (videoId, categoryId))
+            cur.execute('SELECT Total, Average FROM RatingAvgs WHERE ClipId=%s AND RatingCategoryId=%s;', (clipId, categoryId))
             result = cur.fetchone()
-            cur.execute('SELECT * FROM Ratings WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (videoId, userId, categoryId))
+            cur.execute('SELECT * FROM Ratings WHERE ClipId=%s AND UserId=%s AND RatingCategoryId=%s;', (clipId, userId, categoryId))
             oldRatingRow = cur.fetchone()
             print("oldRatingRow:", oldRatingRow)
             # if rating exists, remove old rating and insert new
@@ -127,24 +127,24 @@ class DB:
                     newRating = (revertedRating * (result[0] - 1) + rating) / result[0]
                 else: # if there's only one rating to begin with
                     newRating = rating
-                cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newRating, result[0], videoId, categoryId))
-                cur.execute('UPDATE Ratings SET rating=%s WHERE VideoId=%s AND UserId=%s AND RatingCategoryId=%s;', (rating, videoId, userId, categoryId))
+                cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE ClipId=%s AND RatingCategoryId=%s;', (newRating, result[0], clipId, categoryId))
+                cur.execute('UPDATE Ratings SET rating=%s WHERE ClipId=%s AND UserId=%s AND RatingCategoryId=%s;', (rating, clipId, userId, categoryId))
             # if rating doesn't exist, insert into db
             else:
                 if result != None:
                     newTotal = result[0] + 1
                     newAvg = (newTotal * result[1] + float(rating)) / (newTotal + 1)
-                    cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE VideoId=%s AND RatingCategoryId=%s;', (newAvg, newTotal, videoId, categoryId))
+                    cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE ClipId=%s AND RatingCategoryId=%s;', (newAvg, newTotal, clipId, categoryId))
                 else:
-                    cur.execute('INSERT INTO RatingAvgs VALUES(DEFAULT, %s, %s, %s, %s);', (videoId, categoryId, 1, rating))
-                cur.execute('INSERT INTO Ratings VALUES(DEFAULT, %s, %s, %s, %s, DEFAULT);', (videoId, userId, categoryId, rating))
+                    cur.execute('INSERT INTO RatingAvgs VALUES(DEFAULT, %s, %s, %s, %s);', (clipId, categoryId, 1, rating))
+                cur.execute('INSERT INTO Ratings VALUES(DEFAULT, %s, %s, %s, %s, DEFAULT);', (clipId, userId, categoryId, rating))
             conn.commit()
-            print('Sent rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId, 'successfully.')
+            print('Sent rating', rating, 'for clip', clipId, 'for user', userId, 'of type', categoryId, 'successfully.')
             cur.close()
             conn.close()
             return "test success"
         except:
-            print('Failed to send rating', rating, 'for video', videoId, 'for user', userId, 'of type', categoryId, 'because', sys.exc_info()[0:2])
+            print('Failed to send rating', rating, 'for clip', clipId, 'for user', userId, 'of type', categoryId, 'because', sys.exc_info()[0:2])
             return "test failed"
     
     # authenticates a user and starts a session

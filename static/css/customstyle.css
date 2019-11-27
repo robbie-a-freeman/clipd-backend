@@ -88,7 +88,7 @@ iframe {
   margin:20px;
 }
 
-#results .videoEntry {
+#results .clipEntry {
   display: inline-block;
   text-overflow: ellipsis;
   flex: 1;
@@ -136,6 +136,6 @@ iframe {
   display: inline-block;
 }
 
-#video-player {
+#clip-player {
   
 }

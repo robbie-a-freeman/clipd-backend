@@ -21,9 +21,9 @@ def testSearch(query):
     asyncio.run(test())
 
 
-#def searchForVideos():
+#def searchForClips():
 
-def oldSearchForVideos(query, data, db, userId):
+def oldSearchForClips(query, data, db, userId):
     results = []
     # each comma separated group represents and AND clause
     for p in query.split(','):
@@ -42,8 +42,8 @@ def oldSearchForVideos(query, data, db, userId):
 
             for d in data:
                 if queryRequirements(query) and (query in d or query.lower() in d or d[4] == clutchKills) and [d[1], d[4], d[2]] not in phraseResults:
-                    # get user's past reviews for selected videos
-                    ur = db.getVideoUserRatings(d[0], userId)
+                    # get user's past reviews for selected Clips
+                    ur = db.getClipUserRatings(d[0], userId)
                     phraseResults.append([d[0], d[1], d[4], d[2], ur])
         for r in phraseResults:
             if r not in results:
@@ -58,12 +58,13 @@ def queryRequirements(q):
 
 # Index all the clips in the db upon server start
 def initializeClipsIndex(db):
-    allClips = db.getAllVideos()
+    allClips = db.getAllClips()
     app_id = '10E1WBKVLO'
     api_key = 'bcf375829b1daec9b14b8b765ec31a58'
     client = SearchClient.create(app_id, api_key)
     index = client.init_index('clips')
     for v in allClips:
+        # TODO create a Clip model and use that instead
         index.save_object({
             'objectID': v[0],
             'Code': v[1],
@@ -95,7 +96,7 @@ def clipSearch(query):
 
     return asyncio.run(test(query))
 
-'''CREATE TABLE Videos(
+'''CREATE TABLE Clips(
 	Id SERIAL PRIMARY KEY,
 	Code VARCHAR(512) NOT NULL,
 	Event VARCHAR(64) NULL,

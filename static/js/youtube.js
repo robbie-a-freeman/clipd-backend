@@ -12,45 +12,45 @@ function changeHeight(code, h) { // assuming that the code is common YT embed co
 
 // this is the "master function" where all the stuff happens. returns the adjusted
 // code with the new dimensions
-function scaleVideo(code) { // assuming that the code is common YT embed code
+function scaleClip(code) { // assuming that the code is common YT embed code
   // assumes that these are the starting dimensions
 
-  marginW = calcFrontpageVideoMarginW();
+  marginW = calcFrontpageClipMarginW();
   console.log("marginw: " + marginW);
-  w = calcFrontpageVideoWidth(marginW);
+  w = calcFrontpageClipWidth(marginW);
   console.log("w: " + w);
   //ratio = startingHeight / startingWidth;
-  h = calcVideoHeight(w);
+  h = calcClipHeight(w);
   console.log("h: " + h);
   return changeHeight(changeWidth(code, w), h);
 }
 
-function calcFrontpageVideoMarginW() {
+function calcFrontpageClipMarginW() {
   return 40;
   //return ($("iframe").outerWidth(true) - $("iframe").outerWidth(false)) / 2;
 }
-/*function calcFrontpageVideoWidth(marginW) {
-  return (window.innerWidth - 5 * marginW) / 4; // 5 margins, 4 video elements
+/*function calcFrontpageClipWidth(marginW) {
+  return (window.innerWidth - 5 * marginW) / 4; // 5 margins, 4 clip elements
 }
-function calcFrontpageVideoHeight(width, defaultW = 560, defaultH = 315) {
+function calcFrontpageClipHeight(width, defaultW = 560, defaultH = 315) {
   return defaultH / defaultW * width;
 } */
 
-function calcFrontpageVideoWidth(marginW) {
-  return window.innerWidth - 300 - 2 * marginW ; // 5 margins, 4 video elements
+function calcFrontpageClipWidth(marginW) {
+  return window.innerWidth - 300 - 2 * marginW ; // 5 margins, 4 clip elements
 }
-function calcVideoHeight(width) {
+function calcClipHeight(width) {
   return 1 / (getWidthToHeightRatio() / width);
 }
 
-function getVidFromEmbedLink(code) {
+function getCidFromEmbedLink(code) {
   var srcStrStart = code.indexOf('src=\"https://www.youtube.com/embed/') + 35;
   var id = code.substr(srcStrStart, code.indexOf('frameborder') - srcStrStart - 2) // from the space and quote
   return id; 
 }
 
-function generateThumbnailUrl(vid, isSmall) {
+function generateThumbnailUrl(cid, isSmall) {
   if (isSmall)
-    return 'https://img.youtube.com/vi/' + vid + '/default.jpg';
-  return 'https://img.youtube.com/vi/' + vid + '/0.jpg';
+    return 'https://img.youtube.com/vi/' + cid + '/default.jpg';
+  return 'https://img.youtube.com/vi/' + cid + '/0.jpg';
 }

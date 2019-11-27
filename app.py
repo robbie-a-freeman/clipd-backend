@@ -60,7 +60,7 @@ sys.path.insert(0, 'srv')
 from database import DB
 try:
     db = DB(DATABASE_URL, SSL_MODE)
-    data = db.getAllVideos()
+    data = db.getAllClips()
     print("connected to postgres!")
 except:
     print("not connected to postgres! error:", sys.exc_info()[1])
@@ -117,7 +117,7 @@ def index():
 def search(userId):
     print("in search")
     text = request.args.get('jsdata')
-    #results = algolia.oldSearchForVideos(text, data, db, userId)
+    #results = algolia.oldSearchForClips(text, data, db, userId)
     results = algolia.clipSearch(text)
     print("out search")
     print(results)
@@ -132,32 +132,32 @@ def page_not_found(error):
 def testAPI():
     return jsonify("OH")
 
-@app.route('/videos/<videoId>/avgRatings', methods=['POST'])
-def avgRatings(videoId):
+@app.route('/clips/<clipId>/avgRatings', methods=['POST'])
+def avgRatings(clipId):
     try:
-        return jsonify(db.getAvgVideoRatings(videoId))
+        return jsonify(db.getAvgClipRatings(clipId))
     except:
-        print("EXCEPTION: Could not retrive average ratings for", videoId)
+        print("EXCEPTION: Could not retrive average ratings for", clipId)
         return jsonify([])
 
-@app.route('/videos/<videoId>/userRatings&<userId>', methods=['POST'])
-def userRatings(videoId, userId):
+@app.route('/clips/<clipId>/userRatings&<userId>', methods=['POST'])
+def userRatings(clipId, userId):
     try:
-        return jsonify(db.getVideoUserRatings(videoId, userId))
+        return jsonify(db.getClipUserRatings(clipId, userId))
     except:
-        print("EXCEPTION: Could not retrive user ratings for video", videoId, "and user", userId)
+        print("EXCEPTION: Could not retrive user ratings for clip", clipId, "and user", userId)
         return jsonify([])
 
-@app.route('/videos/<videoId>')
-def videos(videoId):
-    return render_template('video.html', videoId=videoId, videoTitle="Placeholder", videoCode=db.getCode(videoId), categories=json.dumps(db.getCategories()))
+@app.route('/clips/<clipId>')
+def clips(clipId):
+    return render_template('clip.html', clipId=clipId, clipTitle="Placeholder", clipCode=db.getCode(clipId), categories=json.dumps(db.getCategories()))
 
 # input rating into Ratings table upon user post request
-@app.route('/updateRating/<videoId>&<userId>&<categoryId>&<rating>', methods=['POST'])
-def inputRating(videoId, userId, categoryId, rating):
+@app.route('/updateRating/<clipId>&<userId>&<categoryId>&<rating>', methods=['POST'])
+def inputRating(clipId, userId, categoryId, rating):
     # connect to db and send command
     print('input received')
-    return db.updateRating(videoId, userId, categoryId, rating)
+    return db.updateRating(clipId, userId, categoryId, rating)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

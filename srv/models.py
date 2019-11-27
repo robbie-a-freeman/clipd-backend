@@ -1,6 +1,6 @@
 #from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Array
 
-'''class Videos(Base):
+'''class Clips(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     name = Column(String(50), unique=True)
@@ -118,7 +118,7 @@ class Weapon(enum.Enum):
     smoke = 'smoke'
 
 
-class Video:
+class Clip:
     id = Column(Integer, primary_key=True)
     code = Column(String(512))
     event = Column(String(64))
