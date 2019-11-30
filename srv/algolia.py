@@ -58,26 +58,26 @@ def queryRequirements(q):
 
 # Index all the clips in the db upon server start
 def initializeClipsIndex(db):
-    allClips = db.getAllClips()
     app_id = '10E1WBKVLO'
     api_key = 'bcf375829b1daec9b14b8b765ec31a58'
     client = SearchClient.create(app_id, api_key)
     index = client.init_index('clips')
-    for v in allClips:
-        # TODO create a Clip model and use that instead
+    from models import Clip
+    allClips = db.getAllClips()
+    for c in allClips:
         index.save_object({
-            'objectID': v[0],
-            'Code': v[1],
-            'Event': v[2],
-            'Map': v[3],
-            'Player': v[4],
-            'Team': v[5],
-            'GrandFinal': v[6],
-            'Armor': v[7],
-            'Crowd': v[8],
-            'Kills': v[9],
-            'ClutchKills': v[10],
-            'Weapon': v[11]
+            'objectID': c.id,
+            'Code': c.code,
+            'Event': c.event.name,
+            'Map': c.map.name,
+            'Player': c.player.alias,
+            'Team': c.team.alias,
+            'GrandFinal': c.grandFinal,
+            'Armor': c.armor,
+            'Crowd': c.crowd,
+            'Kills': c.kills,
+            'ClutchKills': c.clutchKills,
+            'Weapon': c.weapon
         })
 
 # search the index 'clips' for matching clips

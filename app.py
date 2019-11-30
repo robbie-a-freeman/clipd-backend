@@ -99,9 +99,9 @@ def before_request():
         code = 301
         return redirect(url, code=code)
 
-# trying to run algolia
+# run algolia
 import algolia
-algolia.initializeClipsIndex(db)
+#algolia.initializeClipsIndex(db)
 
 # loads home
 @app.route('/')
@@ -150,6 +150,7 @@ def userRatings(clipId, userId):
 
 @app.route('/clips/<clipId>')
 def clips(clipId):
+    #clip = db.get
     return render_template('clip.html', clipId=clipId, clipTitle="Placeholder", clipCode=db.getCode(clipId), categories=json.dumps(db.getCategories()))
 
 # input rating into Ratings table upon user post request

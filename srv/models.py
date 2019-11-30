@@ -1,17 +1,159 @@
-#from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Array
+# Weapon enum, store different weapons
+import enum
+class Weapon(enum.Enum):
+    cz = 'cz'
+    desertEagle = 'desert_eagle'
+    dualBerettas = 'dual_berettas'
+    fiveSeven = 'five_seven'
+    glock = 'glock'
+    p2000 = 'p2000'
+    p250 = 'p250'
+    r8 = 'r8'
+    tec9 = 'tec9'
+    usp = 'usp'
+    mag7 = 'mag7'
+    nova = 'nova'
+    sawedOff = 'sawed_off'
+    xm = 'xm'
+    mac10 = 'mac10'
+    mp5 = 'mp5'
+    mp7 = 'mp7'
+    mp9 = 'mp9'
+    p90 = 'p90'
+    pp_bizon = 'pp_bizon'
+    ump = 'ump'
+    ak = 'ak'
+    aug = 'aug'
+    famas = 'famas'
+    galil = 'galil'
+    m4a1s = 'm4a1s'
+    m4a4 = 'm4a4'
+    sg = 'sg'
+    awp = 'awp'
+    g3sg1 = 'g3sg1'
+    scar = 'scar'
+    ssg = 'ssg'
+    m249 = 'm249'
+    negev = 'negev'
+    knife = 'knife'
+    zeus = 'zeus'
+    he = 'he'
+    fire = 'fire'
+    flash = 'flash'
+    smoke = 'smoke'
 
-'''class Clips(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
-    name = Column(String(50), unique=True)
-    email = Column(String(120), unique=True)
+class Clip:
+    id = 0
+    code = ''
+    event = None
+    map = None
+    player = None
+    team = None
+    grandFinal = False
+    armor = False
+    crowd = False
+    kills = -1
+    clutchKills = -1
+    weapon = []
+    db = None
 
-    def __init__(self, name=None, email=None):
+    def __init__(self, id, code, eventId, mapId, playerId, teamId, \
+                 grandFinal, armor, crowd, kills, clutchKills, \
+                 weapon, db):
+        # simple assignments
+        self.id = id
+        self.code = code
+        self.grandFinal = grandFinal
+        self.armor = armor
+        self.crowd = crowd
+        self.kills = kills
+        self.clutchKills = clutchKills
+        self.weapon = weapon
+        self.db = db
+
+        # fetching objects from the db
+        self.event = db.getEventById(eventId)
+        self.map = db.getMapById(mapId)
+        self.player = db.getPlayerById(playerId)
+        self.team = db.getTeamById(teamId)
+
+class Team:
+    id = 0
+    alias = ''
+    alternateAliases = []
+    isActive = False
+
+    def __init__(self, id, alias, alternateAliases, isActive):
+        # simple assignments
+        self.id = id
+        self.alias = alias
+        self.alternateAliases = alternateAliases
+        self.isActive = isActive
+
+class Map:
+    id = 0
+    name = ''
+    isActiveDuty = False
+    currentBigVersion = False
+
+    def __init__(self, id, name, isActiveDuty, currentBigVersion):
+        # simple assignments
+        self.id = id
         self.name = name
-        self.email = email
+        self.isActiveDuty = isActiveDuty
+        self.currentBigVersion = currentBigVersion
 
-    def __repr__(self):
-        return '<User %r>' % (self.name)'''
+class Player:
+    id = 0
+    alias = ''
+    name = ''
+    country = ''
+    alternateAliases = []
+    isActive = False
+
+    def __init__(self, id, alias, name, country, alternateAliases, isActive):
+        # simple assignments
+        self.id = id
+        self.alias = alias
+        self.name = name
+        self.country = country
+        self.alternateAliases = alternateAliases
+        self.isActive = isActive
+
+class Organizer:
+    id = 0
+    name = ''
+    eventSeries = ''
+
+    def __init__(self, id, name, eventSeries):
+        # simple assignments
+        self.id = id
+        self.name = name
+        self.eventSeries = eventSeries
+
+class Event:
+    id = 0
+    name = ''
+    organizer = None
+    location = ''
+    prizePool = ''
+    startDate = None
+    endDate = None
+    db = None
+
+    def __init__(self, id, name, organizerId, location, prizePool,\
+                 startDate, endDate, db):
+        # simple assignments
+        self.id = id
+        self.name = name
+        self.location = location
+        self.prizePool = prizePool
+        self.startDate = startDate
+        self.endDate = endDate
+        self.db = db
+
+        # fetching db object
+        self.organizer = db.getOrganizerById(organizerId)
 
 class User:
     id = 0
@@ -72,70 +214,3 @@ class User:
     # it to unicode.
     def get_id(self):
         return self.id
-'''
-# Weapon enum, store different weapons
-import enum
-class Weapon(enum.Enum):
-    cz = 'cz'
-    desertEagle = 'desert_eagle'
-    dualBerettas = 'dual_berettas'
-    fiveSeven = 'five_seven'
-    glock = 'glock'
-    p2000 = 'p2000'
-    p250 = 'p250'
-    r8 = 'r8'
-    tec9 = 'tec9'
-    usp = 'usp'
-    mag7 = 'mag7'
-    nova = 'nova'
-    sawedOff = 'sawed_off'
-    xm = 'xm'
-    mac10 = 'mac10'
-    mp5 = 'mp5'
-    mp7 = 'mp7'
-    mp9 = 'mp9'
-    p90 = 'p90'
-    pp_bizon = 'pp_bizon'
-    ump = 'ump'
-    ak = 'ak'
-    aug = 'aug'
-    famas = 'famas'
-    galil = 'galil'
-    m4a1s = 'm4a1s'
-    m4a4 = 'm4a4'
-    sg = 'sg'
-    awp = 'awp'
-    g3sg1 = 'g3sg1'
-    scar = 'scar'
-    ssg = 'ssg'
-    m249 = 'm249'
-    negev = 'negev'
-    knife = 'knife'
-    zeus = 'zeus'
-    he = 'he'
-    fire = 'fire'
-    flash = 'flash'
-    smoke = 'smoke'
-
-
-class Clip:
-    id = Column(Integer, primary_key=True)
-    code = Column(String(512))
-    event = Column(String(64))
-    map = Column(String(32))
-    player = Column(String(32))
-    team = Column(String(64), nullable=True)
-    grandFinal = Column(Boolean)
-    armor = Column(Boolean)
-    crowd = Column(Boolean)
-    kills = Column(Integer)
-    clutchkills = Column(Integer)
-    weapon = Column(ARRAY(Enum(Weapon)))
-
-    def __init__(self, name=None, email=None):
-        self.name = name
-        self.email = email
-
-    def __repr__(self):
-        return '<User %r>' % (self.name)    
-'''

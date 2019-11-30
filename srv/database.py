@@ -18,17 +18,30 @@ class DB:
         data = cur.fetchall()
         cur.close()
         conn.close()
+
+        clips = []
+        from models import Clip
+        for c in data:
+            print(len(c))
+            clips.append(Clip(*c, self))
+        return clips
+
+    # returns one row of a matching id from a given table
+    def getOneElementById(self, tableName, id):
+        conn = psycopg2.connect(self.URL, sslmode=self.SSL)
+        cur = conn.cursor()
+        # LIMIT 1
+        from psycopg2 import sql
+        cur.execute(sql.SQL("SELECT * FROM {} WHERE Id = %s").format(sql.Identifier(tableName)), (id,))
+        data = cur.fetchone()
+        cur.close()
+        conn.close()
         return data
 
     # get the user by id, used for auth
     def getUserById(self, id):
         try:
-            conn = psycopg2.connect(self.URL, sslmode=self.SSL)
-            cur = conn.cursor()
-            cur.execute('SELECT * FROM Users WHERE Id = %s;', (id, ))
-            data = cur.fetchone()
-            cur.close()
-            conn.close()
+            data = self.getOneElementById('users', id)
             if data:
                 print("Successfully retrieved user")
                 from models import User
@@ -38,6 +51,96 @@ class DB:
                 return None
         except:
             print("Failed to retrieve user: no connection", sys.exc_info()[1])
+            return None
+
+    # get the event by id
+    def getEventById(self, id):
+        try:
+            data = self.getOneElementById('events', id)
+            if data:
+                print("Successfully retrieved event")
+                from models import Event
+                return Event(*data, self)
+            else:
+                print("Failed to retrieve event: no event")
+                return None
+        except:
+            print("Failed to retrieve event: no connection", sys.exc_info()[1])
+            return None
+
+    # get the map by id
+    def getMapById(self, id):
+        try:
+            data = self.getOneElementById('maps', id)
+            if data:
+                print("Successfully retrieved map")
+                from models import Map
+                return Map(*data)
+            else:
+                print("Failed to retrieve map: no map")
+                return None
+        except:
+            print("Failed to retrieve map: no connection", sys.exc_info()[1])
+            return None
+
+    # get the player by id
+    def getPlayerById(self, id):
+        try:
+            data = self.getOneElementById('players', id)
+            if data:
+                print("Successfully retrieved player")
+                from models import Player
+                return Player(*data)
+            else:
+                print("Failed to retrieve player: no player")
+                return None
+        except:
+            print("Failed to retrieve player: no connection", sys.exc_info()[1])
+            return None
+
+    # get the team by id
+    def getTeamById(self, id):
+        try:
+            data = self.getOneElementById('teams', id)
+            if data:
+                print("Successfully retrieved team")
+                from models import Team
+                return Team(*data)
+            else:
+                print("Failed to retrieve team: no team")
+                return None
+        except:
+            print("Failed to retrieve user: no connection", sys.exc_info()[1])
+            return None
+
+    # get the clip by id
+    def getClipById(self, id):
+        try:
+            data = self.getOneElementById('clips', id)
+            if data:
+                print("Successfully retrieved clip")
+                from models import Clip
+                return Clip(*data, self)
+            else:
+                print("Failed to retrieve clip: no clip")
+                return None
+        except:
+            print("Failed to retrieve clip: no connection", sys.exc_info()[1])
+            return None
+
+    # get the organizer by id
+    def getOrganizerById(self, id):
+        try:
+            data = self.getOneElementById('organizers', id)
+            if data:
+                print("Successfully retrieved organizer")
+                from models import Organizer
+                return Organizer(*data)
+            else:
+                print("Failed to retrieve organizer: no organizer")
+                return None
+        except:
+            print("Failed to retrieve organizer: no connection", sys.exc_info()[1])
             return None
 
     # get all rating categories from the db
