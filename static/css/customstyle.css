@@ -6,6 +6,11 @@ html, body {
   min-height: 100%;
 }
 
+#navbar-header, img {
+  max-width: auto;
+  max-height: 50px;
+}
+
 .content {
   min-height:100%;
   margin-top: 50px;
@@ -20,7 +25,7 @@ body {
   background-color:#E6E6E644;
   min-height:800px;
   font-size: 14px;
-  font-family: sans-serif;
+  font-family: Roboto, sans-serif;
   position:relative;
   padding-bottom:120px;
 }
