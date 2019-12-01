@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block style %}
+<style>
+  /* Remove the navbar's default margin-bottom and rounded borders */
+  .navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+  }
+
+  /* Add a gray background color and some padding to the footer */
+  footer {
+    background-color: #f2f2f2;
+    padding: 25px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content container text-center">
+  <form action="{{ url_for('signup') }}" method="post">
+      {{ signUpForm.csrf_token }}
+      {{ signUpForm.signUpUsername.label }} {{ signUpForm.signUpUsername(size=20) }}
+      <br>
+      {{ signUpForm.email.label }} {{ signUpForm.email(size=30) }}
+      <br>
+      {{ signUpForm.signUpPassword.label }} {{ signUpForm.signUpPassword(size=20) }}
+      <br>
+      {{ signUpForm.weapon.label }} {{ signUpForm.weapon }}
+      <br>
+      {{ signUpForm.signUpSubmit.label }} {{ signUpForm.signUpSubmit(size=20) }}
+  </form>
+</div>
+{% endblock %}

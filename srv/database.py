@@ -280,3 +280,19 @@ class DB:
         except:
             print("authentication failed: no connection to database - ", sys.exc_info()[1])
             flash('Login failed.')
+
+    def signUpUser(self, username, email, password, weapon):
+        from flask import flash
+        try:
+            conn = psycopg2.connect(self.URL, sslmode=self.SSL)
+            cur = conn.cursor()
+            weaponTest = 'mag7'
+            cur.execute("INSERT INTO Users VALUES(DEFAULT, %s, %s, crypt(%s, gen_salt('bf')), DEFAULT, DEFAULT, %s)", (username, email, password, weaponTest))
+            conn.commit()
+            print("Sign up success!")
+            flash('Welcome to Clip\'d!')
+            cur.close()
+            conn.close()
+        except:
+            print("Sign up failed - ", sys.exc_info()[1])
+            flash('Sign up failed.')

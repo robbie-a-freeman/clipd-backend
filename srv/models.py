@@ -1,6 +1,7 @@
 # Weapon enum, store different weapons
-import enum
-class Weapon(enum.Enum):
+from enum import Enum, unique
+@unique
+class Weapon(Enum):
     cz = 'cz'
     desertEagle = 'desert_eagle'
     dualBerettas = 'dual_berettas'

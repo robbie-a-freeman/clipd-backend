@@ -60,7 +60,7 @@ sys.path.insert(0, 'srv')
 from database import DB
 try:
     db = DB(DATABASE_URL, SSL_MODE)
-    data = db.getAllClips()
+    #data = db.getAllClips()
     print("connected to postgres!")
 except:
     print("not connected to postgres! error:", sys.exc_info()[1])
@@ -77,12 +77,23 @@ login_manager.init_app(app)
 
 # initialize login form stuff
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, BooleanField
+from wtforms import StringField, SelectField, PasswordField, SubmitField, BooleanField, validators
 class LoginForm(FlaskForm):
-    username = StringField('Username')
-    password = PasswordField('Password')
+    username    = StringField('Username')
+    password    = PasswordField('Password')
     remember_me = BooleanField('Remember Me')
-    submit = SubmitField('Submit')
+    submit      = SubmitField('Submit')
+
+class SignUpForm(FlaskForm):
+    from models import Weapon
+    listWeaponChoices = list(map(str, Weapon))
+    # for reasons required by WTForms
+    weaponChoices = list(map(lambda x:(x,x), listWeaponChoices))
+    signUpUsername = StringField('Username', [validators.Length(min=4, max=25)])
+    email          = StringField('Email Address', [validators.Email(), validators.Length(min=6, max=35)])
+    signUpPassword = PasswordField('Password', [validators.Length(min=4, max=35)])
+    weapon         = SelectField('Favorite Weapon', choices = weaponChoices)
+    signUpSubmit   = SubmitField('Submit')
 
 # setting up Flask-Login user object
 from models import User
@@ -165,14 +176,14 @@ def login():
     # Here we use a class of some kind to represent and validate our
     # client-side form data. For example, WTForms is a library that will
     # handle this for us, and we use a custom LoginForm to validate.
-    form = LoginForm()
-    if form.validate_on_submit():
+    loginForm = LoginForm()
+    if loginForm.validate_on_submit():
         # Login and validate the user.
         # user should be an instance of your `User` class
         # authenticate(User)
         db.loginUser(request.form['username'], request.form['password'], request.form.get('remember_me'))
         return redirect(url_for('index'))
-    return render_template('login.html', form=form)
+    return render_template('login.html', loginForm=loginForm)
 
 @app.route("/logout")
 @login_required
@@ -180,10 +191,14 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-
-'''@app.route("/signup")
-def testreact():
-    return render_template('test-react.html') '''
+@app.route("/signup", methods=['GET', 'POST'])
+def signup():
+    signUpForm = SignUpForm()
+    if signUpForm.validate_on_submit():
+        # Sign up the user
+        db.signUpUser(request.form['signUpUsername'], request.form['email'], request.form['signUpPassword'], request.form.get('weapon'))
+        return redirect(url_for('login'))
+    return render_template('signup.html', signUpForm=signUpForm)
 
 '''# loads About page
 @app.route('/about')

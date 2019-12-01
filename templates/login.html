@@ -15,31 +15,24 @@
     background-color: #f2f2f2;
     padding: 25px;
   }
-
-.carousel-inner img {
-    width: 100%; /* Set width to 100% */
-    margin: auto;
-    min-height:200px;
-}
-
-/* Hide the carousel text when the screen is less than 600 pixels wide */
-@media (max-width: 600px) {
-  .carousel-caption {
-    display: none;
-  }
-}
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="content container text-center">
-        <form action="{{ url_for('login', next=request.endpoint) }}" method="post">
-            {{ form.csrf_token }}
-            {{ form.username.label }} {{ form.username(size=20) }}
-            {{ form.password.label }} {{ form.password(size=20) }}
-            {{ form.remember_me(value='True')|safe }} {{ form.remember_me.label|safe }}
-            {{ form.submit.label }} {{ form.submit(size=20) }}
-        </form>
-    
+    <form action="{{ url_for('login', next=request.endpoint) }}" method="post">
+      {{ loginForm.csrf_token }}
+      {{ loginForm.username.label }} {{ loginForm.username(size=20) }}
+      <br>
+      {{ loginForm.password.label }} {{ loginForm.password(size=20) }}
+      <br>
+      {{ loginForm.remember_me(value='True')|safe }} {{ loginForm.remember_me.label|safe }}
+      <br>
+      {{ loginForm.submit(size=20) }}
+    </form>
+    <br>
+    <form action="{{ url_for('signup') }}">
+      <input href="/signup" value="First time? Sign up!" type="submit">
+  </form>
 </div>
 {% endblock %}
