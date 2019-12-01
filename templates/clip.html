@@ -201,10 +201,10 @@
               // find a rating for the given categoryId, or give 0
               var updatedRating = 0.0;
               console.log(ratingInfo.length);
-              for (var k = 0; k < ratingInfo.length; k+=2) {
-                console.log(ratingInfo[k]);
-                if (ratingInfo[k] == categoryIds[j]) {
-                  updatedRating = ratingInfo[k+1];
+              for (var k = 0; k < avgRatingInfo.length; k+=2) {
+                console.log(avgRatingInfo[k]);
+                if (avgRatingInfo[k] == categoryIds[j]) {
+                  updatedRating = avgRatingInfo[k+1];
                   break;
                 }
               }

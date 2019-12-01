@@ -226,8 +226,15 @@ class DB:
             if oldRatingRow != None: # assumption: a rating exists, the rating average exists too
                 print("result: ", result[0])
                 if result[0] > 1:
+                    print("beginning calculation of new avg")
                     revertedRating = (result[0] * result[1] - oldRatingRow[4]) / (result[0] - 1)
+                    print("result[0]:", result[0])
+                    print("result[1]:", result[1])
+                    print("oldRatingRow[4]:", oldRatingRow[4])
+                    print("result[0] - 1:", result[0] - 1)
+                    print("revertedRating:", revertedRating)
                     newRating = (revertedRating * (result[0] - 1) + rating) / result[0]
+                    print("newRating:", newRating)
                 else: # if there's only one rating to begin with
                     newRating = rating
                 cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE ClipId=%s AND RatingCategoryId=%s;', (newRating, result[0], clipId, categoryId))
@@ -235,9 +242,8 @@ class DB:
             # if rating doesn't exist, insert into db
             else:
                 if result != None:
-                    newTotal = result[0] + 1
-                    newAvg = (newTotal * result[1] + float(rating)) / (newTotal + 1)
-                    cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE ClipId=%s AND RatingCategoryId=%s;', (newAvg, newTotal, clipId, categoryId))
+                    newAvg = (result[0] * result[1] + float(rating)) / (result[0] + 1)
+                    cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE ClipId=%s AND RatingCategoryId=%s;', (newAvg, result[0] + 1, clipId, categoryId))
                 else:
                     cur.execute('INSERT INTO RatingAvgs VALUES(DEFAULT, %s, %s, %s, %s);', (clipId, categoryId, 1, rating))
                 cur.execute('INSERT INTO Ratings VALUES(DEFAULT, %s, %s, %s, %s, DEFAULT);', (clipId, userId, categoryId, rating))
