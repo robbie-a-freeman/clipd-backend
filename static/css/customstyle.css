@@ -49,7 +49,7 @@ body footer {
 }
 
 .navbar-inverse, .navbar {
-  background-color:#FF3C38;
+  background-color:#272e6f;
   border:none;
   box-shadow: 1px 0px 1px;
 }
@@ -59,7 +59,7 @@ body footer {
 }
 
 footer {
-  background-color:#FF3C38 !important;
+  background-color:#272e6f !important;
   margin-top:50px;
   position:absolute;
   left:0px;
@@ -130,8 +130,8 @@ iframe {
 
 .starContainer {
   --star-size: 12px;
-  --star-color: #ffd9d9;
-  --star-background: #ff0000;
+  --star-color: #f7e9d5;
+  --star-background: #ffb71c;
   width: 50%;
   display: inline-block;
 }
