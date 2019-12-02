@@ -77,6 +77,20 @@ class Clip:
         self.map = db.getMapById(mapId)
         self.player = db.getPlayerById(playerId)
         self.team = db.getTeamById(teamId)
+    
+    def asList(self):
+        return [self.id, \
+                self.code, \
+                self.grandFinal, \
+                self.armor, \
+                self.crowd, \
+                self.kills, \
+                self.clutchKills, \
+                self.weapon, \
+                self.event.name, \
+                self.map.name, \
+                self.player.alias, \
+                self.team.alias]
 
 class Team:
     id = 0

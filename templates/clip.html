@@ -20,8 +20,17 @@
 
 {% block content %}
 <meta id="rating-categories" categories="{{ categories }}">
-<meta id="clip-code" code="{{ clipCode }}">
-<meta id="clip-id" cid="{{ clipId }}">
+<meta id="clip-data" data="{{ clipData }}">
+<script>console.log("clip-data:" + $("#clip-data").attr("data"));</script>
+<meta id="clip-id" cid="-1">
+<meta id="clip-code" code="None">
+<meta id="clip-code" code="None">
+<script>
+  var clipData = JSON.parse($("#clip-data").attr("data"));
+  $("#clip-id").attr("cid", clipData[0]);
+  $("#clip-code").attr("code", clipData[1]);
+  $("#clip-grandfinal").attr("gf", clipData[2]);
+</script>
 <meta id="user-clip-ratings" code="">
 <meta id="avg-clip-ratings" code="">
 
@@ -34,6 +43,8 @@
         code = scaleClip(code);
         var player = $("<div>", {id : 'clip-player'});
         var title = $("<div>", {id : 'title'});
+        var description = $("<div>", {id : 'description'});
+        $(title).append("<p>" +  + "</p>");
         $(player).attr("width", 1200);
         $(player).attr("height", 500);
         $(player).attr("margin-left", 25);
@@ -78,7 +89,7 @@
           var ratingButton = $("<div>", {id: "stars" + categoryId});
           $(ratingButton).attr("class", "Stars");
           $(ratingButton).attr("value", 5.0);
-          $(ratingButton).attr("clipId", $("#clip-id").attr("cid"));
+          $(ratingButton).attr("clipId", $("#clip-data").attr("cid"));
           $(ratingButton).attr("catId", categoryId);
           $(ratingButton).attr("style", "--rating:" + DEFAULT_CATEGORY_RATING + ";");
           $(ratingButton).attr("aria-label", "Rating of this product is 2.3 out of 5.");
