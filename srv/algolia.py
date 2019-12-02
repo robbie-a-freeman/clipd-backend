@@ -65,6 +65,16 @@ def initializeClipsIndex(db):
     from models import Clip
     allClips = db.getAllClips()
     for c in allClips:
+        grandFinalResult = 'Not a Grand Final'
+        if c.grandFinal:
+            grandFinalResult = 'Grand Final'
+        armorResult = 'No armor'
+        if c.armor:
+            armorResult = 'Armor'
+        crowdResult = 'No crowd'
+        if c.crowd:
+            crowdResult = 'Crowd'
+
         index.save_object({
             'objectID': c.id,
             'Code': c.code,
@@ -72,11 +82,11 @@ def initializeClipsIndex(db):
             'Map': c.map.name,
             'Player': c.player.alias,
             'Team': c.team.alias,
-            'GrandFinal': c.grandFinal,
-            'Armor': c.armor,
-            'Crowd': c.crowd,
-            'Kills': c.kills,
-            'ClutchKills': c.clutchKills,
+            'GrandFinal': grandFinalResult,
+            'Armor': armorResult,
+            'Crowd': crowdResult,
+            'Kills': ' '.join([str(c.kills), ' kills']),
+            'ClutchKills': 'v'.join(['1', str(c.clutchKills)]),
             'Weapon': c.weapon
         })
 
@@ -95,18 +105,3 @@ def clipSearch(query):
             return results
 
     return asyncio.run(test(query))
-
-'''CREATE TABLE Clips(
-	Id SERIAL PRIMARY KEY,
-	Code VARCHAR(512) NOT NULL,
-	Event VARCHAR(64) NULL,
-	Map VARCHAR(32) NOT NULL,
-	Player VARCHAR(32) NOT NULL,
-	Team VARCHAR(64) NULL,
-	GrandFinal BOOLEAN NOT NULL,
-	Armor BOOLEAN NOT NULL,
-	Crowd BOOLEAN NOT NULL,
-	Kills INT CHECK (kills >= 0 AND kills <= 5),
-	ClutchKills INT CHECK (clutchkills >= 0 AND clutchkills <= 5),
-	Weapon WEAPON ARRAY NOT NULL
-);'''

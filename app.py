@@ -60,7 +60,6 @@ sys.path.insert(0, 'srv')
 from database import DB
 try:
     db = DB(DATABASE_URL, SSL_MODE)
-    #data = db.getAllClips()
     print("connected to postgres!")
 except:
     print("not connected to postgres! error:", sys.exc_info()[1])
