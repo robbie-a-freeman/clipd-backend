@@ -20,16 +20,13 @@
 
 {% block content %}
 <meta id="rating-categories" categories="{{ categories }}">
-<meta id="clip-data" data="{{ clipData }}">
+<meta id="clip-data" data="{{ clipData }}" cid="-1" code="None" gf="PLACEHOLDER">
 <script>console.log("clip-data:" + $("#clip-data").attr("data"));</script>
-<meta id="clip-id" cid="-1">
-<meta id="clip-code" code="None">
-<meta id="clip-code" code="None">
 <script>
   var clipData = JSON.parse($("#clip-data").attr("data"));
-  $("#clip-id").attr("cid", clipData[0]);
-  $("#clip-code").attr("code", clipData[1]);
-  $("#clip-grandfinal").attr("gf", clipData[2]);
+  $("#clip-data").attr("cid", clipData[0]);
+  $("#clip-data").attr("code", clipData[1]);
+  $("#clip-data").attr("gf", clipData[2]);
 </script>
 <meta id="user-clip-ratings" code="">
 <meta id="avg-clip-ratings" code="">
@@ -37,25 +34,28 @@
 <script src="../static/js/youtube.js"></script>
 <div id="clip" class="content container text-center">
     <script>
-        var code = $("#clip-code").attr("code");
+        var code = $("#clip-data").attr("code");
         code = code.replace('[(\'', '');
         code = code.replace('\',)]', '');
         code = scaleClip(code);
         var player = $("<div>", {id : 'clip-player'});
         var title = $("<div>", {id : 'title'});
         var description = $("<div>", {id : 'description'});
-        $(title).append("<p>" +  + "</p>");
+        var gf = $("<div>", {id : 'gf'});
+        $(title).append("<p style='display:inline-block;'>" + "player placeholder" + "</p>"); //player
+        $(title).append("<p style='display:inline-block;'>" + "event placeholder" + "</p>"); //event_
+        $(description).append(title);
+        $(gf).append("<p style='display:inline-block;'>" + "Grand Final? " + $("#clip-data").attr("gf") + "</p>");
+        $(description).append(gf);
         $(player).attr("width", 1200);
         $(player).attr("height", 500);
         $(player).attr("margin-left", 25);
         $(player).attr("margin-right", 25);
         $(player).attr("text-align", "center");
-        $(title).append("<p style='display:inline-block;'>" + "player placeholder" + "</p>"); //player
-        $(title).append("<p style='display:inline-block;'>" + "event placeholder" + "</p>"); //event_
         $(player).html(code);
-        $(player).append(title);
         $(player).append("<br>");
         $("#clip").append(player);
+        $("#clip").append(description);
     </script>
     <script>
       var categories = $("#rating-categories").attr('categories');
@@ -134,7 +134,7 @@
           var ratingButton = $("<div>", {id: "avg-stars" + categoryId});
           $(ratingButton).attr("class", "Stars");
           $(ratingButton).attr("value", 5.0);
-          $(ratingButton).attr("clipId", $("#clip-id").attr("cid"));
+          $(ratingButton).attr("clipId", $("#clip-data").attr("cid"));
           $(ratingButton).attr("catId", categoryId);
           $(ratingButton).attr("style", "--rating:" + DEFAULT_CATEGORY_RATING + ";");
           $(ratingButton).attr("aria-label", "Rating of this product is 2.3 out of 5.");
@@ -151,7 +151,7 @@
         uid = 0;
       }
       var ratingInfo = []
-      var url = "/clips/" + $("#clip-id").attr("cid") + "/userRatings&" + uid;
+      var url = "/clips/" + $("#clip-data").attr("cid") + "/userRatings&" + uid;
         $.ajax({
           url: url,
           type: "post",
@@ -188,7 +188,7 @@
             console.log(xhr);
           }
         });
-        var url = "/clips/" + $("#clip-id").attr("cid") + "/avgRatings";
+        var url = "/clips/" + $("#clip-data").attr("cid") + "/avgRatings";
         $.ajax({
           url: url,
           type: "post",

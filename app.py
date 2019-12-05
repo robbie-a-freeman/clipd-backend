@@ -163,7 +163,7 @@ def clips(clipId):
     from models import Clip
     clip = db.getClipById(clipId)
     clipJson = json.dumps(clip.asList())
-    return render_template('clip.html', clipData=clipJson, clipTitle="Placeholder", clipCode=clip.code, categories=json.dumps(db.getCategories()))
+    return render_template('clip.html', clipData=clipJson, clipTitle="Placeholder", categories=json.dumps(db.getCategories()))
 
 # input rating into Ratings table upon user post request
 @app.route('/updateRating/<clipId>&<userId>&<categoryId>&<rating>', methods=['POST'])

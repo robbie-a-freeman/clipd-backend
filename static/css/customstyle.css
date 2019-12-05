@@ -141,6 +141,10 @@ iframe {
   display: inline-block;
 }
 
-#clip-player {
-  
+#description {
+  background-color:#e0dede;
+}
+
+#title {
+  font-size: 18px;
 }
