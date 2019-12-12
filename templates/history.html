@@ -35,6 +35,18 @@
 <meta id="rating-categories" categories="{{ categories }}">
 <div class="content container text-center">
   <h1>Search clips</h1><br>
+  <script>
+    function populateSearch(txt) {
+      document.getElementById("search").value = txt;
+      $('#search').keyup();
+    }
+  </script>
+  <!-- TODO automate -->
+  <button class="querySuggestion" type="button" value="s1mple" onclick="populateSearch(this.value)">s1mple</button>
+  <button class="querySuggestion" type="button" value="1v4" onclick="populateSearch(this.value)">1v4</button>
+  <button class="querySuggestion" type="button" value="de_inferno" onclick="populateSearch(this.value)">de_inferno</button>
+  <button class="querySuggestion" type="button" value="ESL One" onclick="populateSearch(this.value)">ESL One</button>
+  <button class="querySuggestion" type="button" value="m4a4" onclick="populateSearch(this.value)">m4a4</button>
   {% with messages = get_flashed_messages() %}
     {% if messages %}
       <ul>
