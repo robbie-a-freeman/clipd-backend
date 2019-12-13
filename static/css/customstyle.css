@@ -123,6 +123,7 @@ iframe {
   font-size: var(--star-size);
   font-family: Times; /* make sure ★ appears correctly */
   line-height: 1;
+  -webkit-text-stroke: 0.5px #64663e;
 }
 
 .Stars::after {
@@ -134,7 +135,7 @@ iframe {
 }
 
 .starContainer {
-  --star-size: 12px;
+  --star-size: 14px;
   --star-color: #f7e9d5;
   --star-background: #ffb71c;
   width: 50%;
@@ -143,6 +144,11 @@ iframe {
 
 #description {
   background-color:#e0dede;
+}
+
+#description a {
+  color:#000;
+  font-weight:bold;
 }
 
 #title {

@@ -87,10 +87,10 @@ class Clip:
                 self.kills, \
                 self.clutchKills, \
                 self.weapon, \
-                self.event.name, \
-                self.map.name, \
-                self.player.alias, \
-                self.team.alias]
+                self.event.asList(), \
+                self.map.asList(), \
+                self.player.asList(), \
+                self.team.asList()]
 
 class Team:
     id = 0
@@ -104,6 +104,12 @@ class Team:
         self.alias = alias
         self.alternateAliases = alternateAliases
         self.isActive = isActive
+    
+    def asList(self):
+        return [self.id, \
+                self.alias, \
+                self.alternateAliases, \
+                self.isActive]
 
 class Map:
     id = 0
@@ -117,6 +123,12 @@ class Map:
         self.name = name
         self.isActiveDuty = isActiveDuty
         self.currentBigVersion = currentBigVersion
+    
+    def asList(self):
+        return [self.id, \
+                self.name, \
+                self.isActiveDuty, \
+                self.currentBigVersion]
 
 class Player:
     id = 0
@@ -134,6 +146,14 @@ class Player:
         self.country = country
         self.alternateAliases = alternateAliases
         self.isActive = isActive
+    
+    def asList(self):
+        return [self.id, \
+                self.alias, \
+                self.name, \
+                self.country, \
+                self.alternateAliases, \
+                self.isActive]
 
 class Organizer:
     id = 0
@@ -145,6 +165,11 @@ class Organizer:
         self.id = id
         self.name = name
         self.eventSeries = eventSeries
+    
+    def asList(self):
+        return [self.id, \
+                self.name, \
+                self.eventSeries]
 
 class Event:
     id = 0
@@ -169,6 +194,15 @@ class Event:
 
         # fetching db object
         self.organizer = db.getOrganizerById(organizerId)
+    
+    def asList(self):
+        return [self.id, \
+                self.name, \
+                self.location, \
+                self.prizePool, \
+                self.startDate, \
+                self.endDate, \
+                self.organizer.name] # TODO make asList for organizer
 
 class User:
     id = 0

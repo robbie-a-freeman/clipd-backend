@@ -20,13 +20,26 @@
 
 {% block content %}
 <meta id="rating-categories" categories="{{ categories }}">
-<meta id="clip-data" data="{{ clipData }}" cid="-1" code="None" gf="PLACEHOLDER">
+<meta id="clip-data" data="{{ clipData }}">
 <script>console.log("clip-data:" + $("#clip-data").attr("data"));</script>
 <script>
   var clipData = JSON.parse($("#clip-data").attr("data"));
   $("#clip-data").attr("cid", clipData[0]);
   $("#clip-data").attr("code", clipData[1]);
   $("#clip-data").attr("gf", clipData[2]);
+  $("#clip-data").attr("armor", clipData[3]);
+  $("#clip-data").attr("crowd", clipData[4]);
+  $("#clip-data").attr("kills", clipData[5]);
+  $("#clip-data").attr("clutchKills", clipData[6]);
+  $("#clip-data").attr("weapons", clipData[7]);
+  $("#clip-data").attr("eventId", clipData[8][0]);
+  $("#clip-data").attr("eventName", clipData[8][1]);
+  $("#clip-data").attr("mapId", clipData[9][0]);
+  $("#clip-data").attr("mapName", clipData[9][1]);
+  $("#clip-data").attr("playerId", clipData[10][0]);
+  $("#clip-data").attr("playerAlias", clipData[10][1]);
+  $("#clip-data").attr("teamId", clipData[11][0]);
+  $("#clip-data").attr("teamAlias", clipData[11][1]);
 </script>
 <meta id="user-clip-ratings" code="">
 <meta id="avg-clip-ratings" code="">
@@ -41,12 +54,19 @@
         var player = $("<div>", {id : 'clip-player'});
         var title = $("<div>", {id : 'title'});
         var description = $("<div>", {id : 'description'});
-        var gf = $("<div>", {id : 'gf'});
-        $(title).append("<p style='display:inline-block;'>" + "player placeholder" + "</p>"); //player
-        $(title).append("<p style='display:inline-block;'>" + "event placeholder" + "</p>"); //event_
-        $(description).append(title);
-        $(gf).append("<p style='display:inline-block;'>" + "Grand Final? " + $("#clip-data").attr("gf") + "</p>");
-        $(description).append(gf);
+        var info = $("<div>", {id : 'info'});
+        $(title).append("<p style='display:inline-block;'>" + $("#clip-data").attr("player") + " at " + $("#clip-data").attr("eventName") + "</p>");
+        
+        $(info).append("<p style='display:inline-block;'>" + "Grand Final? " + $("#clip-data").attr("gf") + "</p><br>");
+        $(info).append("<p style='display:inline-block;'>" + "Armor? " + $("#clip-data").attr("armor") + "</p><br>");
+        $(info).append("<p style='display:inline-block;'>" + "Crowd? " + $("#clip-data").attr("crowd") + "</p><br>");
+        $(info).append("<p style='display:inline-block;'>" + "Kills: " + $("#clip-data").attr("kills") + "</p><br>");
+        $(info).append("<p style='display:inline-block;'>" + "Clutch kills: " + $("#clip-data").attr("clutchKills") + "</p><br>");
+        $(info).append("<p style='display:inline-block;'>" + "Weapon used: " + $("#clip-data").attr("weapons") + "</p><br>");
+        $(info).append("<p style='display:inline-block;'>" + "Event: <a href='/events/" + $('#clip-data').attr('eventId') + "'>" + $("#clip-data").attr("eventName") + "</a></p><br>");
+        $(info).append("<p style='display:inline-block;'>" + "Map: <a href='/maps/" + $('#clip-data').attr('mapId') + "'>" + $("#clip-data").attr("mapName") + "</a></p><br>");
+        $(info).append("<p style='display:inline-block;'>" + "Player: <a href='/players/" + $('#clip-data').attr('playerId') + "'>" + $("#clip-data").attr("playerAlias") + "</a></p><br>");
+        $(info).append("<p style='display:inline-block;'>" + "Team: <a href='/teams/" + $('#clip-data').attr('teamId') + "'>" + $("#clip-data").attr("teamAlias") + "</a></p><br>");
         $(player).attr("width", 1200);
         $(player).attr("height", 500);
         $(player).attr("margin-left", 25);
@@ -54,8 +74,12 @@
         $(player).attr("text-align", "center");
         $(player).html(code);
         $(player).append("<br>");
-        $("#clip").append(player);
+        $(description).append(player);
+        $(description).append(title);
+        $(description).append(info);
+        //$("#clip").append(player);
         $("#clip").append(description);
+        $("#clip").append("<br>");
     </script>
     <script>
       var categories = $("#rating-categories").attr('categories');
