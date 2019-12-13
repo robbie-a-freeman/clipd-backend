@@ -12,7 +12,6 @@ from flask import abort
 from flask import redirect
 from flask import url_for
 from flask import send_file
-from flask import flash
 
 import os
 import sys
@@ -201,12 +200,34 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html', signUpForm=signUpForm)
 
+# initialize contact form
+from flask_wtf import FlaskForm
+from wtforms import StringField, SelectField, PasswordField, SubmitField, BooleanField, validators
+from wtforms.widgets import TextArea
+class ContactForm(FlaskForm):
+    reasonsForContact = [('casual', 'Just saying hi!'),\
+                        ('job', 'Looking for a job'),\
+                        ('partnership', 'Business partnership'),\
+                        ('correction', 'Something\'s missing/incorrect')]
+    name    = StringField('Name')
+    email   = StringField('Email (if desired)', [validators.Email(), validators.Length(min=6, max=35)])
+    reason  = SelectField('Reason for reaching out', choices = reasonsForContact)
+    content = StringField('Content', widget=TextArea())
+    submit  = SubmitField('Submit')
+
+# loads contact page
+@app.route('/contact')
+def contact():
+    contactForm = ContactForm()
+    if contactForm.validate_on_submit():
+        from flask import flash
+        flash('Thanks for your input. We\'ll be in touch!')
+        # TODO somehow send messages
+        return redirect(url_for('index'))
+    return render_template('contact.html', contactForm=contactForm)
+
 '''# loads About page
 @app.route('/about')
 def about():
     return render_template('about.html')'''
 
-'''# loads contact page
-@app.route('/contact')
-def contact():
-    return render_template('contact.html')'''

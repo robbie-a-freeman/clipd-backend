@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact{% endblock %}
+
+{% block style %}
+<style>
+  /* Remove the navbar's default margin-bottom and rounded borders */
+  .navbar {
+    margin-bottom: 0;
+    border-radius: 0;
+  }
+
+  /* Add a gray background color and some padding to the footer */
+  footer {
+    background-color: #f2f2f2;
+    padding: 25px;
+  }
+
+  .content {
+    text-align:justify;
+  }
+  
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content container text-center">
+    <h1>Contact Us!</h1><br>
+    <form action="" method=post>
+        {{ contactForm.csrf_token }}
+        {{ contactForm.name.label }} {{ contactForm.name(size=30) }}
+        <br>
+        {{ contactForm.email.label }} {{ contactForm.email(size=30) }}
+        <br>
+        {{ contactForm.reason.label }} {{ contactForm.reason }}
+        <br>
+        {{ contactForm.content.label }} {{ contactForm.content(cols="100", rows="6") }}
+        <br>
+        {{ contactForm.submit(size=20) }}
+    </form>
+</div>
+
+{% endblock %}
