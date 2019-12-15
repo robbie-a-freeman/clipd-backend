@@ -55,7 +55,7 @@
         var title = $("<div>", {id : 'title'});
         var description = $("<div>", {id : 'description'});
         var info = $("<div>", {id : 'info'});
-        $(title).append("<p style='display:inline-block;'>" + $("#clip-data").attr("player") + " at " + $("#clip-data").attr("eventName") + "</p>");
+        $(title).append("<p style='display:inline-block;'>" + $("#clip-data").attr("playerAlias") + " at " + $("#clip-data").attr("eventName") + "</p>");
         
         $(info).append("<p style='display:inline-block;'>" + "Grand Final? " + $("#clip-data").attr("gf") + "</p><br>");
         $(info).append("<p style='display:inline-block;'>" + "Armor? " + $("#clip-data").attr("armor") + "</p><br>");
