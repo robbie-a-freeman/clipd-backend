@@ -207,4 +207,4 @@ Temporary Items
 # End of https://www.gitignore.io/api/osx
 
 # Custom stuff
-static\img\Backups
+static/img/Backups
