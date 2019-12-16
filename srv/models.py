@@ -1,4 +1,5 @@
 # Weapon enum, store different weapons
+'''
 from enum import Enum, unique
 @unique
 class Weapon(Enum):
@@ -41,7 +42,7 @@ class Weapon(Enum):
     he = 'he'
     fire = 'fire'
     flash = 'flash'
-    smoke = 'smoke'
+    smoke = 'smoke' '''
 
 class Clip:
     id = 0
@@ -55,12 +56,13 @@ class Clip:
     crowd = False
     kills = -1
     clutchKills = -1
-    weapon = []
+    weapons = []
+    dateAdded = None
     db = None
 
     def __init__(self, id, code, eventId, mapId, playerId, teamId, \
                  grandFinal, armor, crowd, kills, clutchKills, \
-                 weapon, db):
+                 weaponIds, dateAdded, db):
         # simple assignments
         self.id = id
         self.code = code
@@ -69,16 +71,21 @@ class Clip:
         self.crowd = crowd
         self.kills = kills
         self.clutchKills = clutchKills
-        self.weapon = weapon
+        self.dateAdded = dateAdded
         self.db = db
 
         # fetching objects from the db
+        self.weapons = db.getWeaponListingById(weaponIds)
         self.event = db.getEventById(eventId)
         self.map = db.getMapById(mapId)
         self.player = db.getPlayerById(playerId)
         self.team = db.getTeamById(teamId)
     
-    def asList(self):
+    def asList(self): # not returning everything
+        # put the weapons into list format
+        weaponsAsLists = []
+        for w in self.weapons:
+            weaponsAsLists.append(w.asList())
         return [self.id, \
                 self.code, \
                 self.grandFinal, \
@@ -86,7 +93,7 @@ class Clip:
                 self.crowd, \
                 self.kills, \
                 self.clutchKills, \
-                self.weapon, \
+                weaponsAsLists, \
                 self.event.asList(), \
                 self.map.asList(), \
                 self.player.asList(), \
@@ -170,6 +177,22 @@ class Organizer:
         return [self.id, \
                 self.name, \
                 self.eventSeries]
+
+class Weapon:
+    id = 0
+    name = ''
+    dateAdded = None
+
+    def __init__(self, id, name, dateAdded):
+        # simple assignments
+        self.id = id
+        self.name = name
+        self.dateAdded = dateAdded
+    
+    def asList(self):
+        return [self.id, \
+                self.name, \
+                self.dateAdded]
 
 class Event:
     id = 0

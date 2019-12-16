@@ -75,6 +75,9 @@ def initializeClipsIndex(db):
         if c.crowd:
             crowdResult = 'Crowd'
 
+        weaponList = []
+        for w in c.weapons:
+            weaponList.append(w.name)
         index.save_object({
             'objectID': c.id,
             'Code': c.code,
@@ -87,7 +90,7 @@ def initializeClipsIndex(db):
             'Crowd': crowdResult,
             'Kills': ' '.join([str(c.kills), ' kills']),
             'ClutchKills': 'v'.join(['1', str(c.clutchKills)]),
-            'Weapon': c.weapon
+            'Weapons': weaponList
         })
 
 # search the index 'clips' for matching clips

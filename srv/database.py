@@ -142,6 +142,27 @@ class DB:
         except:
             print("Failed to retrieve organizer: no connection", sys.exc_info()[1])
             return None
+            
+    # get the weaponListing by list of ids
+    def getWeaponListingById(self, ids):
+        try:
+            data = []
+            for i in ids:
+                print("retrieved weapon: ", self.getOneElementById('weapons', i))
+                data.append(self.getOneElementById('weapons', i))
+            if data:
+                from models import Weapon
+                weapons = []
+                for r in data:
+                    weapons.append(Weapon(*r))
+                print("Successfully retrieved weapon")
+                return weapons
+            else:
+                print("Failed to retrieve weapon: no weapon")
+                return None
+        except:
+            print("Failed to retrieve weapon: no connection,", sys.exc_info()[1])
+            return None
 
     # get all rating categories from the db
     def getCategories(self):
@@ -209,6 +230,21 @@ class DB:
             return ar
         except:
             print('Failed to receive average ratings for clip', cid, 'because', sys.exc_info()[1])
+            return []
+
+    # get all the weapon types
+    def getWeaponTypes(self):
+        try:
+            conn = psycopg2.connect(self.URL, sslmode=self.SSL)
+            cur = conn.cursor()
+            cur.execute('SELECT Name FROM Weapons')
+            t = cur.fetchall()
+            print('Fetched Weapon types successfully.')
+            cur.close()
+            conn.close()
+            return t
+        except:
+            print('Failed to fetch Weapon types because', sys.exc_info()[1])
             return []
 
     # TODO improve by minimizing time function possesses lock on the db connection

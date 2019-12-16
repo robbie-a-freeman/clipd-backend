@@ -25,13 +25,21 @@
 <script>
   var clipData = JSON.parse($("#clip-data").attr("data"));
   $("#clip-data").attr("cid", clipData[0]);
-  $("#clip-data").attr("code", clipData[1]);
+  $("#clip-data").attr("code", '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + clipData[1] + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>'); // TODO change this to be a bit more neat
   $("#clip-data").attr("gf", clipData[2]);
   $("#clip-data").attr("armor", clipData[3]);
   $("#clip-data").attr("crowd", clipData[4]);
   $("#clip-data").attr("kills", clipData[5]);
   $("#clip-data").attr("clutchKills", clipData[6]);
-  $("#clip-data").attr("weapons", clipData[7]);
+  // retrieve each weapon name
+  weaponIdList = [];
+  weaponNameList = [];
+  for (var i = 0; i < clipData[7].length; i++) {
+    weaponIdList.push(clipData[7][i][0]);
+    weaponNameList.push(clipData[7][i][1]);
+  }
+  $("#clip-data").attr("weaponIds", weaponIdList);
+  $("#clip-data").attr("weaponNames", weaponNameList);
   $("#clip-data").attr("eventId", clipData[8][0]);
   $("#clip-data").attr("eventName", clipData[8][1]);
   $("#clip-data").attr("mapId", clipData[9][0]);
@@ -62,7 +70,17 @@
         $(info).append("<p style='display:inline-block;'>" + "Crowd? " + $("#clip-data").attr("crowd") + "</p><br>");
         $(info).append("<p style='display:inline-block;'>" + "Kills: " + $("#clip-data").attr("kills") + "</p><br>");
         $(info).append("<p style='display:inline-block;'>" + "Clutch kills: " + $("#clip-data").attr("clutchKills") + "</p><br>");
-        $(info).append("<p style='display:inline-block;'>" + "Weapon used: " + $("#clip-data").attr("weapons") + "</p><br>");
+        var weaponIds = $("#clip-data").attr("weaponIds").split(",");
+        var weaponNames = $("#clip-data").attr("weaponNames").split(",");
+        var weaponNameString = "";
+        for(var i = 0; i < weaponNames.length; i++) {
+          if (i != 0) {
+            weaponNameString = weaponNameString + ", ";
+          }
+          weaponNameString = weaponNameString + "<a href='/weapons/" + weaponIds[i] + "'>" + weaponNames[i] + "</a>";
+        }
+        var weaponIds = $("#clip-data").attr("weaponIds").split(",");
+        $(info).append("<p style='display:inline-block;'>" + "Weapon(s) used: " + weaponNameString + "</p><br>"); 
         $(info).append("<p style='display:inline-block;'>" + "Event: <a href='/events/" + $('#clip-data').attr('eventId') + "'>" + $("#clip-data").attr("eventName") + "</a></p><br>");
         $(info).append("<p style='display:inline-block;'>" + "Map: <a href='/maps/" + $('#clip-data').attr('mapId') + "'>" + $("#clip-data").attr("mapName") + "</a></p><br>");
         $(info).append("<p style='display:inline-block;'>" + "Player: <a href='/players/" + $('#clip-data').attr('playerId') + "'>" + $("#clip-data").attr("playerAlias") + "</a></p><br>");

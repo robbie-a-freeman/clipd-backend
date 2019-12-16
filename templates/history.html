@@ -106,7 +106,8 @@
               for (var i = 0; i < r.hits.length; i++) {
                 v = r.hits[i]
                 id = v['objectID'];
-                code = v['Code'];
+                console.log('vCode:', v['Code'])
+                code = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + v['Code'] + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
                 player = v['Player'];
                 event_ = v['Event'];
                 //ratingInfo = v.slice(4, v.length);

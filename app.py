@@ -84,7 +84,8 @@ class LoginForm(FlaskForm):
 
 class SignUpForm(FlaskForm):
     from models import Weapon
-    listWeaponChoices = list(map(str, Weapon))
+    listWeaponChoices = db.getWeaponTypes()
+    print("weapon choices: ", listWeaponChoices)
     # for reasons required by WTForms
     weaponChoices = list(map(lambda x:(x,x), listWeaponChoices))
     signUpUsername = StringField('Username', [validators.Length(min=4, max=25)])
@@ -110,7 +111,7 @@ def before_request():
 
 # run algolia
 import algolia
-#algolia.initializeClipsIndex(db)
+algolia.initializeClipsIndex(db)
 
 # loads home
 @app.route('/')
@@ -126,7 +127,6 @@ def index():
 def search(userId):
     print("in search")
     text = request.args.get('jsdata')
-    #results = algolia.oldSearchForClips(text, data, db, userId)
     results = algolia.clipSearch(text)
     print("out search")
     print(results)
