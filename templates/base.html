@@ -23,8 +23,11 @@
       <a href="/"><img style="margin:0px;" src="../static/img/clipdheader.png"></a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
-      <ul class="nav navbar-nav">
-      </ul>
+      <div class="nav navbar-nav">
+        <form>
+          <input onkeypress="javascript: return (event.which == 13 ? false : true);console.log(event.which)" style="width:600px;" type="text" placeholder="Search" id="headerSearch">
+        </form>
+      </div>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/about">About</a></li>
         <li><a href="/contact">Contact</a></li>

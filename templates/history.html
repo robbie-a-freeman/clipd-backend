@@ -34,11 +34,11 @@
 {% block content %}
 <meta id="rating-categories" categories="{{ categories }}">
 <div class="content container text-center">
-  <h1>Search clips</h1><br>
+  <h4 class="frontpageHeader">Suggested topics</h4><br>
   <script>
     function populateSearch(txt) {
-      document.getElementById("search").value = txt;
-      $('#search').keyup();
+      document.getElementById("headerSearch").value = txt;
+      $('#headerSearch').keyup();
     }
   </script>
   <!-- TODO automate -->
@@ -56,13 +56,8 @@
       </ul>
     {% endif %}
   {% endwith %}
-  <div class="search-container">
-    <form>
-      <input onkeypress="javascript: return (event.which == 13 ? false : true);console.log(event.which)" style="width:600px;" type="text" placeholder="ex. s1mple 1v2, best aces" id="search">
-    </form>
-  </div>
   <br>
-  <div id="results">Try searching for something!</div>
+  <div id="results"></div>
   <script src="../static/js/youtube.js"></script>
   <script>
     var previousText = "";
@@ -83,7 +78,7 @@
     if (uid == "") {
       uid = 0;
     }
-    $("#search").keyup(function() {
+    $("#headerSearch").keyup(function() {
       var text = $(this).val();
       if (previousText !== text && text.length > 2) {
         console.log("ajax  called");
@@ -94,6 +89,13 @@
             jsdata: text
           },
           success: function(response) {
+            // put header of results
+            $("#resultsHeader").remove();
+            var $h4 = $("<h4>", {class: "frontpageHeader"});
+            $($h4).attr("id", "resultsHeader")
+            $($h4).html("Results");
+            $($h4).insertBefore("#results");
+
             console.log("success called");
             var r = response;
             console.log(r);

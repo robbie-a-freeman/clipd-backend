@@ -142,6 +142,16 @@ iframe {
   font-size: 18px;
 }
 
+#headerSearch {
+  -ms-transform: translateY(+50%);
+  transform: translateY(+50%);
+  margin-left:20px;
+  border-radius: 2px;
+  border: 1px solid #337FED;
+  line-height:25px;
+  text-indent:5px;
+}
+
 .querySuggestion {
   background: #272e6f;
   -webkit-border-radius: 20px;
@@ -188,4 +198,9 @@ iframe {
   flex-wrap: wrap;
   width: 25%;
   padding: 10px;
+}
+
+h4, .frontpageHeader {
+  font-weight:bold;
+  text-align:justify;
 }
