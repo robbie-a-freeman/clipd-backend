@@ -38,6 +38,17 @@ class DB:
         conn.close()
         return data
 
+    # get a user by just the username
+    def getUserByName(self, name):
+        conn = psycopg2.connect(self.URL, sslmode=self.SSL)
+        cur = conn.cursor()
+        from psycopg2 import sql
+        cur.execute(sql.SQL("SELECT * FROM {} WHERE Name = %s").format(sql.Identifier('users')), (name,))
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+        return user
+
     # get the user by id, used for auth
     def getUserById(self, id):
         try:
@@ -271,7 +282,7 @@ class DB:
                     print("revertedRating:", revertedRating)
                     newRating = (revertedRating * (result[0] - 1) + rating) / result[0]
                     print("newRating:", newRating)
-                else: # if there's only one rating to begin with
+                else: # corner case: if there's only one rating to begin with
                     newRating = rating
                 cur.execute('UPDATE RatingAvgs SET Average=%s, Total=%s WHERE ClipId=%s AND RatingCategoryId=%s;', (newRating, result[0], clipId, categoryId))
                 cur.execute('UPDATE Ratings SET rating=%s WHERE ClipId=%s AND UserId=%s AND RatingCategoryId=%s;', (rating, clipId, userId, categoryId))
