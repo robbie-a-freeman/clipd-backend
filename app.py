@@ -35,26 +35,6 @@ try:
 except KeyError:
     SSL_MODE='require' # default is requiring ssl
 
-'''# set up SQLAlchemy
-from flask_sqlalchemy import SQLAlchemy
-POSTGRES_URL = str('postgresql://localhost:5432')
-POSTGRES_USER = str('postgres')
-POSTGRES_PW = str('rorodog')
-POSTGRES_DB = str('csgo_highlights')
-TEST_DB_URL = str('postgresql+psycopg2://{user}:{pw}@{url}/{db}'.format(user=POSTGRES_USER,pw=POSTGRES_PW,url=POSTGRES_URL,db=POSTGRES_DB))
-app.config['SQLALCHEMY_DATABASE_URI'] = TEST_DB_URL
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False # silence the deprecation warning
-db = SQLAlchemy(app)
-from sqlalchemy_utils import database_exists, create_database, drop_database
-if database_exists(TEST_DB_URL):
-    print('Deleting database.')
-    drop_database(TEST_DB_URL)
-if not database_exists(TEST_DB_URL):
-    print('Creating database.')
-    create_database(TEST_DB_URL)
-db.create_all()
-print('db should be up') '''
-
 sys.path.insert(0, 'srv')
 from database import DB
 try:
@@ -73,27 +53,6 @@ from flask_login import LoginManager, login_required, login_user, logout_user
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# initialize login form stuff
-from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, PasswordField, SubmitField, BooleanField, validators
-class LoginForm(FlaskForm):
-    username    = StringField('Username')
-    password    = PasswordField('Password')
-    remember_me = BooleanField('Remember Me')
-    submit      = SubmitField('Submit')
-
-class SignUpForm(FlaskForm):
-    from models import Weapon
-    listWeaponChoices = db.getWeaponTypes()
-    print("weapon choices: ", listWeaponChoices)
-    # for reasons required by WTForms
-    weaponChoices = list(map(lambda x:(x,x), listWeaponChoices))
-    signUpUsername = StringField('Username', [validators.Length(min=4, max=25)])
-    email          = StringField('Email Address', [validators.Email(), validators.Length(min=6, max=35)])
-    signUpPassword = PasswordField('Password', [validators.Length(min=4, max=35)])
-    weapon         = SelectField('Favorite Weapon', choices = weaponChoices)
-    signUpSubmit   = SubmitField('Submit')
-
 # setting up Flask-Login user object
 from models import User
 @login_manager.user_loader
@@ -111,7 +70,7 @@ def before_request():
 
 # run algolia
 import algolia
-algolia.initializeClipsIndex(db)
+#algolia.initializeClipsIndex(db)
 
 # loads home
 @app.route('/')
@@ -170,6 +129,27 @@ def inputRating(clipId, userId, categoryId, rating):
     # connect to db and send command
     print('input received')
     return db.updateRating(clipId, userId, categoryId, rating)
+
+# initialize login form stuff
+from flask_wtf import FlaskForm
+from wtforms import StringField, SelectField, PasswordField, SubmitField, BooleanField, validators
+class LoginForm(FlaskForm):
+    username    = StringField('Username')
+    password    = PasswordField('Password')
+    remember_me = BooleanField('Remember Me')
+    submit      = SubmitField('Submit')
+
+# initialize sign up form stuff
+class SignUpForm(FlaskForm):
+    from models import Weapon
+    listWeaponChoices = db.getWeaponTypes()
+    # for reasons required by WTForms
+    weaponChoices = list(map(lambda x:(x,x), listWeaponChoices))
+    signUpUsername = StringField('Username', [validators.Length(min=4, max=25)])
+    email          = StringField('Email Address', [validators.Email(), validators.Length(min=6, max=35)])
+    signUpPassword = PasswordField('Password', [validators.Length(min=4, max=35)])
+    weapon         = SelectField('Favorite Weapon', choices = weaponChoices)
+    signUpSubmit   = SubmitField('Submit')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
