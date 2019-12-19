@@ -5,6 +5,7 @@ python-dotenv==0.10.3
 pyjwt==1.7.1
 flask_cors==3.0.7
 Flask-Login==0.4.1
+Flask-Mail==0.9.1
 flask_wtf==0.14.2
 wtforms==2.2.1
 algoliasearch==2.1.0

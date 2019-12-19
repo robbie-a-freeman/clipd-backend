@@ -34,7 +34,6 @@ try:
     SSL_MODE = os.environ['SSL_MODE']
 except KeyError:
     SSL_MODE='require' # default is requiring ssl
-
 sys.path.insert(0, 'srv')
 from database import DB
 try:
@@ -42,6 +41,20 @@ try:
     print("connected to postgres!")
 except:
     print("not connected to postgres! error:", sys.exc_info()[1])
+
+# setting up email variables
+from flask_mail import Mail, Message
+app.config.update(
+	DEBUG=True,
+	#EMAIL SETTINGS
+	MAIL_SERVER='smtp.gmail.com',
+	MAIL_PORT=465,
+	MAIL_USE_SSL=True,
+	MAIL_USERNAME = 'robbie.a.freeman@gmail.com',
+	MAIL_PASSWORD = 'rorodog811',
+    MAIL_DEFAULT_SENDER = 'robbie.a.freeman@gmail.com'
+	)
+mail = Mail(app)
 
 # setting up secret key
 # TODO make this environment var
@@ -153,14 +166,8 @@ class SignUpForm(FlaskForm):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    # Here we use a class of some kind to represent and validate our
-    # client-side form data. For example, WTForms is a library that will
-    # handle this for us, and we use a custom LoginForm to validate.
     loginForm = LoginForm()
     if loginForm.validate_on_submit():
-        # Login and validate the user.
-        # user should be an instance of your `User` class
-        # authenticate(User)
         db.loginUser(request.form['username'], request.form['password'], request.form.get('remember_me'))
         return redirect(url_for('index'))
     return render_template('login.html', loginForm=loginForm)
@@ -196,13 +203,22 @@ class ContactForm(FlaskForm):
     submit  = SubmitField('Submit')
 
 # loads contact page
-@app.route('/contact')
+@app.route('/contact', methods=['GET', 'POST'])
 def contact():
     contactForm = ContactForm()
     if contactForm.validate_on_submit():
         from flask import flash
-        flash('Thanks for your input. We\'ll be in touch!')
-        # TODO somehow send messages
+        try:
+            subject = "Clip'd request form: " + request.form["reason"] + " - " + request.form["name"]
+            msg = Message(subject, \
+            recipients=["robbie.a.freeman@gmail.com"])
+            msg.body = request.form["content"] + "\n\n Sender email:" + request.form["email"]
+            mail.send(msg)
+            flash('Thanks for your input. We\'ll be in touch!')
+            print("Message sent")
+        except:
+            flash('Sorry, message failed to send. Try again later!')
+            print("Message failed to send, exception: ", sys.exc_info()[1])
         return redirect(url_for('index'))
     return render_template('contact.html', contactForm=contactForm)
 
