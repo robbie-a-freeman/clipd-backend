@@ -221,6 +221,20 @@ def contact():
             print("Message failed to send, exception: ", sys.exc_info()[1])
         return redirect(url_for('index'))
     return render_template('contact.html', contactForm=contactForm)
+'''
+@app.route('/../static/image/headers/<headerType>/<headerName>', methods=['GET'])
+def headers(headerType, headerName): # TODO expand for the other types of headers
+    print(headerType, headerName)
+    if headerType == 'maps': # TODO replace this with something more efficient, like external web server
+        from flask import send_from_directory  # TODO make png
+        return send_from_directory('/static/img/headers/maps/de_inferno.jpg') #'.'.join([headerName, 'jpg'])
+    else:
+        return ':/' '''
+
+@app.route('/maps/<mapId>')
+def maps(mapId):
+    mapObj = db.getMapById(mapId)
+    return render_template('category.html', catTitle=mapObj.name, catInfo=mapObj.asList())
 
 '''# loads About page
 @app.route('/about')
