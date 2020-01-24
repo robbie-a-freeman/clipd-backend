@@ -6,7 +6,7 @@ html, body {
   min-height: 100%;
 }
 
-#navbar-header, img {
+.navbar-header img {
   max-width: auto;
   max-height: 50px;
 }
