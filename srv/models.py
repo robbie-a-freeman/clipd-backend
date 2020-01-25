@@ -219,13 +219,16 @@ class Event:
         self.organizer = db.getOrganizerById(organizerId)
     
     def asList(self):
+        organizerList = []
+        if self.organizer:
+            organizerList = self.organizer.asList()
         return [self.id, \
                 self.name, \
                 self.location, \
                 self.prizePool, \
                 self.startDate, \
                 self.endDate, \
-                self.organizer.name] # TODO make asList for organizer
+                organizerList]
 
 class User:
     id = 0

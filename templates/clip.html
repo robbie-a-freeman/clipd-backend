@@ -42,6 +42,8 @@
   $("#clip-data").attr("weaponNames", weaponNameList);
   $("#clip-data").attr("eventId", clipData[8][0]);
   $("#clip-data").attr("eventName", clipData[8][1]);
+  $("#clip-data").attr("organizerId", clipData[8][6][0]);
+  $("#clip-data").attr("organizerName", clipData[8][6][1]);
   $("#clip-data").attr("mapId", clipData[9][0]);
   $("#clip-data").attr("mapName", clipData[9][1]);
   $("#clip-data").attr("playerId", clipData[10][0]);
@@ -82,6 +84,9 @@
         var weaponIds = $("#clip-data").attr("weaponIds").split(",");
         $(info).append("<p style='display:inline-block;'>" + "Weapon(s) used: " + weaponNameString + "</p><br>"); 
         $(info).append("<p style='display:inline-block;'>" + "Event: <a href='/events/" + $('#clip-data').attr('eventId') + "'>" + $("#clip-data").attr("eventName") + "</a></p><br>");
+        if ($('#clip-data').attr('organizerId')) {       
+           $(info).append("<p style='display:inline-block;'>" + "Event Organizer: <a href='/organizers/" + $('#clip-data').attr('organizerId') + "'>" + $("#clip-data").attr("organizerName") + "</a></p><br>");
+        }
         $(info).append("<p style='display:inline-block;'>" + "Map: <a href='/maps/" + $('#clip-data').attr('mapId') + "'>" + $("#clip-data").attr("mapName") + "</a></p><br>");
         $(info).append("<p style='display:inline-block;'>" + "Player: <a href='/players/" + $('#clip-data').attr('playerId') + "'>" + $("#clip-data").attr("playerAlias") + "</a></p><br>");
         $(info).append("<p style='display:inline-block;'>" + "Team: <a href='/teams/" + $('#clip-data').attr('teamId') + "'>" + $("#clip-data").attr("teamAlias") + "</a></p><br>");
