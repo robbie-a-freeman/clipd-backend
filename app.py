@@ -221,20 +221,43 @@ def contact():
             print("Message failed to send, exception: ", sys.exc_info()[1])
         return redirect(url_for('index'))
     return render_template('contact.html', contactForm=contactForm)
-'''
-@app.route('/../static/image/headers/<headerType>/<headerName>', methods=['GET'])
-def headers(headerType, headerName): # TODO expand for the other types of headers
-    print(headerType, headerName)
-    if headerType == 'maps': # TODO replace this with something more efficient, like external web server
-        from flask import send_from_directory  # TODO make png
-        return send_from_directory('/static/img/headers/maps/de_inferno.jpg') #'.'.join([headerName, 'jpg'])
-    else:
-        return ':/' '''
 
 @app.route('/maps/<mapId>')
 def maps(mapId):
     mapObj = db.getMapById(mapId)
-    return render_template('category.html', catTitle=mapObj.name, catInfo=mapObj.asList())
+    print("name,", mapObj.name)
+    return render_template('category.html', catTitle=mapObj.name, catType="maps", catInfo=mapObj.asList())
+    
+@app.route('/events/<eventId>')
+def events(eventId):
+    eventObj = db.getEventById(eventId)
+    print("name,", eventObj.name)
+    return render_template('category.html', catTitle=eventObj.name, catType="events", catInfo=eventObj.asList())
+    
+@app.route('/players/<playerId>')
+def players(playerId):
+    playerObj = db.getPlayerById(playerId)
+    print("name,", playerObj.alias)
+    return render_template('category.html', catTitle=playerObj.alias, catType="players", catInfo=playerObj.asList())
+    
+@app.route('/weapons/<weaponId>')
+def weapons(weaponId):
+    weaponObj = db.getWeaponById(weaponId)
+    print("name,", weaponObj.name)
+    return render_template('category.html', catTitle=weaponObj.name, catType="weapons", catInfo=weaponObj.asList())
+    
+@app.route('/organizers/<organizerId>')
+@app.route('/organisers/<organizerId>') # lol British English
+def organizers(organizerId):
+    organizerObj = db.getOrganizerById(organizerId)
+    print("name,", organizerObj.name)
+    return render_template('category.html', catTitle=organizerObj.name, catType="organizers", catInfo=organizerObj.asList())
+    
+@app.route('/teams/<teamId>')
+def teams(teamId):
+    teamObj = db.getTeamById(teamId)
+    print("name,", teamObj.alias)
+    return render_template('category.html', catTitle=teamObj.alias, catType="teams", catInfo=teamObj.asList())
 
 '''# loads About page
 @app.route('/about')

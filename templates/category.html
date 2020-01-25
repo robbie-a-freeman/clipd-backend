@@ -19,11 +19,19 @@
 {% endblock %}
 
 {% block content %}
-    <!-- Header image with a label -->
-    <div id="header-container">
-        <img src="/static/img/headers/maps/de_inferno_cut.jpg">
-        <div id="header-text"><h1>de_inferno</h1></div>
-    </div>
+<meta id="category" title="{{ catTitle }}" type="{{ catType }}">
+
+<!-- Header image with a label -->
+<div id="header-container">
+    <object id="header-image" data="" type="image/png">
+        <img src="/static/img/headers/placeholder.png">
+    </object>
+    <div id="header-text"><h1>category</h1></div>
+</div>
+<script>
+    $("#header-image").attr("data", "/static/img/headers/" + $("#category").attr("type") + "/" + $("#category").attr("title") + ".png");
+    $("#header-text").html("<h1>" + $("#category").attr("title") + "</h1>");
+</script>
 <div class="content container text-center">
 
     <!-- Sorting buttons for below videos -->
@@ -44,7 +52,10 @@
   </select>
     
     <!-- Load videos of the given category with the given filters -->
-  <h4 class="frontpageHeader">Clips with de_inferno</h4><br>
+  <h4 id="categoryResultHeader" class="frontpageHeader">Clips with </h4><br>
+  <script>
+      $("#categoryResultHeader").text($("#categoryResultHeader").text() + $("#category").attr("title"))
+  </script>
   <div id="results"></div>
   <script src="../static/js/youtube.js"></script>
   <script>
@@ -57,7 +68,7 @@
         url: "/search&" + uid,
         type: "get",
         data: {
-            jsdata: "de_inferno"
+            jsdata: $("#category").attr("title")
         },
         success: function(response) {
         // put header of results

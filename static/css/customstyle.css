@@ -213,9 +213,11 @@ h4, .frontpageHeader {
   text-shadow: 2px 2px #000;
 }
 
-#header-container img {
+#header-container object, #header-container img {
   filter: brightness(70%);
-  max-width:100%;
+  width:100%;
+  height:auto;
+  background-color: green;
 }
 
 #header-text {
