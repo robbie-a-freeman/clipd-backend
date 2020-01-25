@@ -82,46 +82,45 @@
             var clipHeight = calcClipHeight(clipWidth);
             var code, player, event_, ratingButton, v;
             for (var i = 0; i < r.hits.length; i++) {
-            v = r.hits[i]
-            id = v['objectID'];
-            console.log('vCode:', v['Code'])
-            code = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + v['Code'] + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
-            player = v['Player'];
-            event_ = v['Event'];
-            //ratingInfo = v.slice(4, v.length);
+                v = r.hits[i]
+                id = v['objectID'];
+                console.log('vCode:', v['Code'])
+                code = '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + v['Code'] + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+                player = v['Player'];
+                event_ = v['Event'];
 
-            var thumbnail = generateThumbnailUrl(getCidFromEmbedLink(code), true);
+                var thumbnail = generateThumbnailUrl(getCidFromEmbedLink(code), true);
 
-            code = code.replace(/\[\"/g, "");
-            code = code.replace(/\"\]/g, "");
-            code = code.replace(/\",\"/g, "");
-            code = code.replace(/\\\"/g, "\"");
-            code = scaleClip(code);
-            var $div = $("<div>", {id: i});
-            $($div).attr("class", "clipEntry");
-            $($div).attr("width", clipWidth);
-            $($div).attr("height", clipHeight + 70);
-            $($div).attr("margin-left", clipWidthMargin / 2);
-            $($div).attr("margin-right", clipWidthMargin / 2);
-            $($div).attr("text-align", "center");
+                code = code.replace(/\[\"/g, "");
+                code = code.replace(/\"\]/g, "");
+                code = code.replace(/\",\"/g, "");
+                code = code.replace(/\\\"/g, "\"");
+                code = scaleClip(code);
+                var $div = $("<div>", {id: i});
+                $($div).attr("class", "clipEntry");
+                $($div).attr("width", clipWidth);
+                $($div).attr("height", clipHeight + 70);
+                $($div).attr("margin-left", clipWidthMargin / 2);
+                $($div).attr("margin-right", clipWidthMargin / 2);
+                $($div).attr("text-align", "center");
 
-            var img = $("<img>");
-            $(img).attr("src", thumbnail);
-            $($div).html(img);
+                var img = $("<img>");
+                $(img).attr("src", thumbnail);
+                $($div).html(img);
 
-            var $lildiv = $("<div>", {id: i + "-lil"});
-            $($lildiv).attr("width", clipWidth);
-            var $a = $("<a>", {href: "clips/" + id});
-            $($lildiv).append("<br>");
-            $($a).append("<p style='display:inline-block;'>" + player + "</p>");
-            $($a).append("<br>");
-            $($a).append("<p style='display:inline-block;'>" + event_ + "</p>");
-            $($lildiv).append($a);
-            $($lildiv).append("<br>");
-            $($lildiv).append("<br>");
+                var $lildiv = $("<div>", {id: i + "-lil"});
+                $($lildiv).attr("width", clipWidth);
+                var $a = $("<a>", {href: "/clips/" + id});
+                $($lildiv).append("<br>");
+                $($a).append("<p style='display:inline-block;'>" + player + "</p>");
+                $($a).append("<br>");
+                $($a).append("<p style='display:inline-block;'>" + event_ + "</p>");
+                $($lildiv).append($a);
+                $($lildiv).append("<br>");
+                $($lildiv).append("<br>");
 
-            $($div).append($lildiv);
-            $(results).append($div);
+                $($div).append($lildiv);
+                $(results).append($div);
             }
             
         }
