@@ -65,31 +65,52 @@
         var title = $("<div>", {id : 'title'});
         var description = $("<div>", {id : 'description'});
         var info = $("<div>", {id : 'info'});
-        $(title).append("<p style='display:inline-block;'>" + $("#clip-data").attr("playerAlias") + " at " + $("#clip-data").attr("eventName") + "</p>");
-        
-        $(info).append("<p style='display:inline-block;'>" + "Grand Final? " + $("#clip-data").attr("gf") + "</p><br>");
-        $(info).append("<p style='display:inline-block;'>" + "Armor? " + $("#clip-data").attr("armor") + "</p><br>");
-        $(info).append("<p style='display:inline-block;'>" + "Crowd? " + $("#clip-data").attr("crowd") + "</p><br>");
-        $(info).append("<p style='display:inline-block;'>" + "Kills: " + $("#clip-data").attr("kills") + "</p><br>");
-        $(info).append("<p style='display:inline-block;'>" + "Clutch kills: " + $("#clip-data").attr("clutchKills") + "</p><br>");
-        var weaponIds = $("#clip-data").attr("weaponIds").split(",");
-        var weaponNames = $("#clip-data").attr("weaponNames").split(",");
-        var weaponNameString = "";
-        for(var i = 0; i < weaponNames.length; i++) {
-          if (i != 0) {
-            weaponNameString = weaponNameString + ", ";
-          }
-          weaponNameString = weaponNameString + "<a href='/weapons/" + weaponIds[i] + "'>" + weaponNames[i] + "</a>";
+        if ($("#clip-data").attr("playerAlias")) {
+          $(title).append("<p style='display:inline-block;'>" + $("#clip-data").attr("playerAlias") + " at " + $("#clip-data").attr("eventName") + "</p>");
         }
-        var weaponIds = $("#clip-data").attr("weaponIds").split(",");
-        $(info).append("<p style='display:inline-block;'>" + "Weapon(s) used: " + weaponNameString + "</p><br>"); 
-        $(info).append("<p style='display:inline-block;'>" + "Event: <a href='/events/" + $('#clip-data').attr('eventId') + "'>" + $("#clip-data").attr("eventName") + "</a></p><br>");
+        if ($("#clip-data").attr("gf")) {
+          $(info).append("<p style='display:inline-block;'>" + "Grand Final? " + $("#clip-data").attr("gf") + "</p><br>");
+        }
+        if ($("#clip-data").attr("armor")) {
+          $(info).append("<p style='display:inline-block;'>" + "Armor? " + $("#clip-data").attr("armor") + "</p><br>");
+        }
+        if ($("#clip-data").attr("crowd")) {
+          $(info).append("<p style='display:inline-block;'>" + "Crowd? " + $("#clip-data").attr("crowd") + "</p><br>");
+        }
+        if ($("#clip-data").attr("kills")) {        
+          $(info).append("<p style='display:inline-block;'>" + "Kills: " + $("#clip-data").attr("kills") + "</p><br>");
+        }
+        if ($("#clip-data").attr("clutchKills")) {    
+          $(info).append("<p style='display:inline-block;'>" + "Clutch kills: " + $("#clip-data").attr("clutchKills") + "</p><br>");
+        }
+        if ($("#clip-data").attr("weaponIds")) {
+          var weaponIds = $("#clip-data").attr("weaponIds").split(",");
+          var weaponNames = $("#clip-data").attr("weaponNames").split(",");
+          var weaponNameString = "";
+          for(var i = 0; i < weaponNames.length; i++) {
+            if (i != 0) {
+              weaponNameString = weaponNameString + ", ";
+            }
+            weaponNameString = weaponNameString + "<a href='/weapons/" + weaponIds[i] + "'>" + weaponNames[i] + "</a>";
+          }
+          var weaponIds = $("#clip-data").attr("weaponIds").split(",");
+          $(info).append("<p style='display:inline-block;'>" + "Weapon(s) used: " + weaponNameString + "</p><br>"); 
+        }
+        if ($("#clip-data").attr("eventId")) {
+          $(info).append("<p style='display:inline-block;'>" + "Event: <a href='/events/" + $('#clip-data').attr('eventId') + "'>" + $("#clip-data").attr("eventName") + "</a></p><br>");
+        }
         if ($('#clip-data').attr('organizerId')) {       
            $(info).append("<p style='display:inline-block;'>" + "Event Organizer: <a href='/organizers/" + $('#clip-data').attr('organizerId') + "'>" + $("#clip-data").attr("organizerName") + "</a></p><br>");
         }
-        $(info).append("<p style='display:inline-block;'>" + "Map: <a href='/maps/" + $('#clip-data').attr('mapId') + "'>" + $("#clip-data").attr("mapName") + "</a></p><br>");
-        $(info).append("<p style='display:inline-block;'>" + "Player: <a href='/players/" + $('#clip-data').attr('playerId') + "'>" + $("#clip-data").attr("playerAlias") + "</a></p><br>");
-        $(info).append("<p style='display:inline-block;'>" + "Team: <a href='/teams/" + $('#clip-data').attr('teamId') + "'>" + $("#clip-data").attr("teamAlias") + "</a></p><br>");
+        if ($("#clip-data").attr("mapId")) {
+          $(info).append("<p style='display:inline-block;'>" + "Map: <a href='/maps/" + $('#clip-data').attr('mapId') + "'>" + $("#clip-data").attr("mapName") + "</a></p><br>");
+        }
+        if ($("#clip-data").attr("playerId")) {
+          $(info).append("<p style='display:inline-block;'>" + "Player: <a href='/players/" + $('#clip-data').attr('playerId') + "'>" + $("#clip-data").attr("playerAlias") + "</a></p><br>");
+        }
+        if ($("#clip-data").attr("teamId")) {
+          $(info).append("<p style='display:inline-block;'>" + "Team: <a href='/teams/" + $('#clip-data').attr('teamId') + "'>" + $("#clip-data").attr("teamAlias") + "</a></p><br>");
+        }
         $(player).attr("width", 1200);
         $(player).attr("height", 500);
         $(player).attr("margin-left", 25);
