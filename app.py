@@ -259,6 +259,12 @@ def teams(teamId):
     print("name,", teamObj.alias)
     return render_template('category.html', catTitle=teamObj.alias, catType="teams", catInfo=teamObj.asList())
 
+@app.route('/surpriseme')
+def surpriseme():
+    clip = db.getRandomClip()
+    clipJson = json.dumps(clip.asList())
+    return render_template('clip.html', clipData=clipJson, clipTitle="Placeholder", categories=json.dumps(db.getCategories()))
+
 '''# loads About page
 @app.route('/about')
 def about():

@@ -28,9 +28,10 @@
           <input onkeypress="javascript: return (event.which == 13 ? false : true);console.log(event.which)" style="width:600px;" type="text" placeholder="Search" id="headerSearch">
         </form>
       </div>
+      <div class="nav navbar-nav">
+        <li style="float:right;"><a href="/surpriseme">Surprise Me!</a></li>
+      </div>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="/about">About</a></li>
-        <li><a href="/contact">Contact</a></li>
         {% if current_user.is_authenticated %}
           <li><a href="/logout">Logout - {{ current_user.username }}</a></li>
         {% else %}
@@ -44,7 +45,12 @@
 {% block content %}{% endblock %}
 
 <footer class="container-fluid text-center">
-  <p><i>Content curated by Clip'd &#174;</i></p>
+  <p><i>Clip'd &#174;</i></p>
+  <ul>
+    <li><a href="/terms">Terms</a></li>
+    <li><a href="/about">About</a></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
 </footer>
 
 </body>

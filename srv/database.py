@@ -258,6 +258,26 @@ class DB:
             print('Failed to fetch Weapon types because', sys.exc_info()[1])
             return []
 
+    # get random clip from the table
+    def getRandomClip(self):
+        try:
+            conn = psycopg2.connect(self.URL, sslmode=self.SSL)
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM Clips OFFSET floor(random() * (SELECT COUNT(*) FROM Clips) ) LIMIT 1;")
+            data = cur.fetchone()
+            if data:
+                print("Successfully retrieved RANDOM clip")
+                from models import Clip
+                return Clip(*data, self)
+            else:
+                print("Failed to retrieve RANDOM clip: no clip")
+                return None
+            cur.close()
+            conn.close()
+        except:
+            print("Failed to retrieve RANDOM clip: no connection", sys.exc_info()[1])
+            return None
+
     # TODO improve by minimizing time function possesses lock on the db connection
     def updateRating(self, clipId, userId, categoryId, rating):
         rating = float(rating)
