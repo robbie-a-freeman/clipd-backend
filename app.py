@@ -85,6 +85,7 @@ def before_request():
 import algolia
 #algolia.initializeClipsIndex(db)
 
+
 # loads home
 @app.route('/')
 @app.route('/home')
