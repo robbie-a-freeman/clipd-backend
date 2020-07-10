@@ -1,8 +1,4 @@
 html {
-  height: 100%;
-}
-
-html, body {
   min-height: 100%;
 }
 
@@ -12,8 +8,9 @@ html, body {
 }
 
 .content {
-  min-height:100%;
+  min-height:500px;
   margin-top: 50px;
+  min-height:100vh;
 }
 
 .content p {
@@ -23,11 +20,9 @@ html, body {
 body {
   color:#000;
   background-color:#E6E6E644;
-  min-height:800px;
+  min-height:100vh;
   font-size: 16px;
   font-family: Roboto, sans-serif;
-  position:relative;
-  padding-bottom:120px;
 }
 
 .subtext {
@@ -60,17 +55,15 @@ body footer {
 }
 
 .container {
-  min-height:75%;
 }
 
 footer {
+  display: flex;
   background-color:#272e6f !important;
   margin-top:50px;
   position:absolute;
   left:0px;
-  bottom:0px;
   width: 100%;
-  height:100px;
 }
 
 ::placeholder {
