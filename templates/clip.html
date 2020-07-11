@@ -3,6 +3,13 @@
 {% block title %}{{ clipTitle }}{% endblock %}
 
 {% block style %}
+
+<script>
+  function resizeIframe(obj) {
+    obj.style.height = obj.contentWindow.document.documentElement.scrollHeight + 'px';
+  }
+</script>
+
 <style>
   /* Remove the navbar's default margin-bottom and rounded borders */
   .navbar {
@@ -21,6 +28,7 @@
 {% block content %}
 <meta id="rating-categories" categories="{{ categories }}">
 <meta id="clip-data" data="{{ clipData }}">
+<meta id="clip-context-data" data="{{ clipContextData }}">
 <script>console.log("clip-data:" + $("#clip-data").attr("data"));</script>
 <script>
   var clipData = JSON.parse($("#clip-data").attr("data"));
@@ -125,6 +133,53 @@
         $("#clip").append(description);
         $("#clip").append("<br>");
     </script>
+
+    <!-- Build the statistics display section -->
+    <div id="clip-statistics" class="clip-info">
+      <h4>Statistics</h4>
+      <ul>
+        <li><p><b>4 million people saw this clip live.</b></p></li>
+        <li><p><b>This was the first time Snax 1v4'd at a major LAN.</b></p></li>
+        <li><p><b>Snax's angle of flick at 0:37 usually has an accuracy of 14% among professionals.</b></p></li>
+      </ul>
+    </div>
+    <script>
+        if ($("#clip-context-data").attr("stats")) {
+          
+        }
+    </script>
+
+    <!-- Build the reactions section -->
+    <div id="clip-reactions" class="clip-info">
+      <h4>Reactions</h4>
+      <iframe class="tweet-container" frameborder="0" style="width:50%;display:flex;" srcDoc='<!DOCTYPE html><head><body><blockquote class="twitter-tweet"><p lang="en" dir="ltr"><a href="https://twitter.com/hashtag/hue?src=hash&amp;ref_src=twsrc%5Etfw">#hue</a> test</p>&mdash; testing (@testing) <a href="https://twitter.com/testing/status/1135187953779716097?ref_src=twsrc%5Etfw">June 2, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></body></head><body></body></!DOCTYPE html>'>
+      </iframe>
+      <iframe class="tweet-container" frameborder="0" style="width:50%;display:flex;" srcDoc='<!DOCTYPE html><head><body><blockquote class="twitter-tweet"><p lang="en" dir="ltr"><a href="https://twitter.com/hashtag/hue?src=hash&amp;ref_src=twsrc%5Etfw">#hue</a> test</p>&mdash; testing (@testing) <a href="https://twitter.com/testing/status/1135187953779716097?ref_src=twsrc%5Etfw">June 2, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></body></head><body></body></!DOCTYPE html>'>
+      </iframe>
+      <iframe class="tweet-container" frameborder="0" style="width:50%;display:flex;" srcDoc='<!DOCTYPE html><head><body><blockquote class="twitter-tweet"><p lang="en" dir="ltr"><a href="https://twitter.com/hashtag/hue?src=hash&amp;ref_src=twsrc%5Etfw">#hue</a> test</p>&mdash; testing (@testing) <a href="https://twitter.com/testing/status/1135187953779716097?ref_src=twsrc%5Etfw">June 2, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></body></head><body></body></!DOCTYPE html>'>
+      </iframe>
+      <iframe class="tweet-container" frameborder="0" style="width:50%;display:flex;" srcDoc='<!DOCTYPE html><head><body><blockquote class="twitter-tweet"><p lang="en" dir="ltr"><a href="https://twitter.com/hashtag/hue?src=hash&amp;ref_src=twsrc%5Etfw">#hue</a> test</p>&mdash; testing (@testing) <a href="https://twitter.com/testing/status/1135187953779716097?ref_src=twsrc%5Etfw">June 2, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></body></head><body></body></!DOCTYPE html>'>
+      </iframe></div>
+    <script>
+        if ($("#clip-context-data").attr("reactions")) {
+          
+        }
+
+    </script>
+
+    <!-- Build the timeline section -->
+    <div id="clip-timelines" class="clip-info">
+      <h4>Timelines</h4>
+      <img class="clip-timeline-img" width="100%" src="/static/img/filler_timeline.png">
+      <img class="clip-timeline-img" width="100%" src="/static/img/filler_timeline.png">
+      <img class="clip-timeline-img" width="100%" src="/static/img/filler_timeline.png">
+    </div>
+    <script>
+        if ($("#clip-context-data").attr("timelines")) {
+          
+        }
+    </script>
+    <!-- Build the rating categories -->
     <script>
       var categories = $("#rating-categories").attr('categories');
       categories = categories.substring(1, categories.length - 1);
@@ -146,6 +201,7 @@
       // append rating buttons to each entry
       var DEFAULT_CATEGORY_RATING = 0.0;
       var ratingsContainer = $("<div>");
+      $(ratingsContainer).append($("<h4>").html("Ratings"));
       var userRatingsContainer = $("<div>");
       for (var j = 0; j < categoryIds.length; j++) {
           // find a rating for the given categoryId, or give 0

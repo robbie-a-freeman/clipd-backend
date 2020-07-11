@@ -37,7 +37,7 @@ function calcFrontpageClipHeight(width, defaultW = 560, defaultH = 315) {
 } */
 
 function calcFrontpageClipWidth(marginW) {
-  return window.innerWidth - 300 - 2 * marginW ; // 5 margins, 4 clip elements
+  return window.innerWidth - 500 - 2 * marginW ; // 5 margins, 4 clip elements
 }
 function calcClipHeight(width) {
   return 1 / (getWidthToHeightRatio() / width);

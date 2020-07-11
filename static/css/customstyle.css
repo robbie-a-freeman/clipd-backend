@@ -243,6 +243,31 @@ h4, .frontpageHeader {
   background-image: -moz-linear-gradient(top, #1E62D0, #3D94F6);
   background-image: -ms-linear-gradient(top, #1E62D0, #3D94F6);
   background-image: -o-linear-gradient(top, #1E62D0, #3D94F6);
-  background-image: linear-gradient(to bottom, #1E62D0, #3D94F6);=
+  background-image: linear-gradient(to bottom, #1E62D0, #3D94F6);
   text-decoration: none;
+}
+
+#clip-reactions {
+  text-align: justify;
+}
+
+#clip-statistics {
+
+}
+
+.clip-info {
+  margin-bottom:20px;
+}
+
+.tweet-container {
+  height:200px;
+  box-sizing: border-box;
+  font-size:0;    /* Force space between inline-block elements to be 0 */
+  float:left;
+  margin-right:0;
+  margin-left:0;
+}
+
+.clip-timeline-img {
+  margin-bottom:60px;
 }
